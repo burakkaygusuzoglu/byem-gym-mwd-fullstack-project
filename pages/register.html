@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Üye Ol — BYEM GYM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link rel="stylesheet" href="../assets/css/auth.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="../index.html" class="navbar-brand">BYEM<span>GYM</span></a>
+      <div class="navbar-actions">
+        <a href="login.html" class="btn btn-ghost btn-sm">Giriş Yap</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="auth-wrapper">
+    <div class="auth-card card">
+      <div class="auth-header">
+        <h2>Hesap <span class="text-primary">Oluştur</span></h2>
+        <p>Ücretsiz kaydol, antrenmana hemen başla.</p>
+      </div>
+
+      <div class="alert" id="registerAlert"></div>
+
+      <form id="registerForm" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="firstName">Ad</label>
+            <input type="text" id="firstName" class="form-input" placeholder="Adın" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lastName">Soyad</label>
+            <input type="text" id="lastName" class="form-input" placeholder="Soyadın" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">E-posta</label>
+          <input type="email" id="email" class="form-input" placeholder="ornek@email.com" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Şifre</label>
+          <div class="input-icon-wrap">
+            <input type="password" id="password" class="form-input" placeholder="En az 6 karakter" required minlength="6" />
+            <button type="button" class="toggle-pw" tabindex="-1">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="passwordConfirm">Şifre Tekrar</label>
+          <input type="password" id="passwordConfirm" class="form-input" placeholder="Şifreni tekrar gir" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg mt-2" id="registerBtn">
+          Üye Ol
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Zaten hesabın var mı? <a href="login.html">Giriş Yap</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase-config.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+/* ============================================================
+   BYEM GYM — auth.css
+   Login & Register pages
+   ============================================================ */
+
+.auth-wrapper {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(249,115,22,0.07) 0%, transparent 70%);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-header { margin-bottom: 1.75rem; }
+.auth-header h2 { margin-bottom: 0.4rem; }
+.auth-header p { margin: 0; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.input-icon-wrap {
+  position: relative;
+}
+
+.input-icon-wrap .form-input {
+  padding-right: 3rem;
+}
+
+.toggle-pw {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+  transition: color var(--transition);
+}
+
+.toggle-pw:hover { color: var(--text); }
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.auth-footer p { margin: 0; font-size: 0.9rem; }
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .form-row { grid-template-columns: 1fr; }
+  .auth-card { padding: 1.5rem; }
+}
