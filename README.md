@@ -9,7 +9,7 @@ A full-stack web application for managing gym members, classes, memberships, and
 | Name | Role |
 |---|---|
 | Burak Kaygusuzoğlu | Frontend Developer, Auth, Admin Panel, Deployment |
-| Nevzat Berk Akkaş | Frontend Developer, Membership, Booking, Exercise API |
+| Nevzat Berk Akkaş | Backend Developer, Membership, Booking, Exercise API |
 
 ---
 
