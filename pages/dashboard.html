@@ -16,14 +16,13 @@
     <div class="container">
       <a href="../index.html" class="navbar-brand">BYEM<span>GYM</span></a>
       <ul class="navbar-menu">
-        <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
+        <li><a href="dashboard.html" class="navbar-link active">Dashboard</a></li>
         <li><a href="membership.html" class="navbar-link">Üyelik</a></li>
         <li><a href="booking.html" class="navbar-link">Rezervasyon</a></li>
         <li><a href="exercises.html" class="navbar-link">Egzersizler</a></li>
+        <li><a href="profile.html" class="navbar-link">Profilim</a></li>
       </ul>
-      <div class="navbar-actions">
-        <!-- Injected by main.js when logged in -->
-      </div>
+      <div class="navbar-actions" id="navActions"></div>
       <button class="hamburger" aria-label="Menü">
         <span></span><span></span><span></span>
       </button>
@@ -35,16 +34,138 @@
     <a href="membership.html" class="navbar-link">Üyelik</a>
     <a href="booking.html" class="navbar-link">Rezervasyon</a>
     <a href="exercises.html" class="navbar-link">Egzersizler</a>
+    <a href="profile.html" class="navbar-link">Profilim</a>
   </div>
 
-  <!-- PAGE CONTENT — Dashboard -->
-  <main class="page-content container" id="dashboardPage">
-    <div class="page-header">
-      <h2>Dashboard</h2>
+  <main class="page-content container">
+
+    <!-- Header -->
+    <div class="dash-header">
+      <h2>Hoşgeldin, <span class="text-primary" id="userName">...</span> 💪</h2>
+      <p id="dashDate"></p>
     </div>
-    <!-- TODO: Implement Dashboard content -->
-    <div class="card mt-3">
-      <p class="text-muted">Bu sayfa geliştirme aşamasındadır.</p>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="fa-solid fa-calendar-check"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="totalBookings">0</span>
+          <span class="stat-label">Rezervasyonum</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fa-solid fa-dumbbell"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">1300+</span>
+          <span class="stat-label">Egzersiz</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fa-solid fa-clock"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="daysLeft">—</span>
+          <span class="stat-label">Gün Kaldı</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber"><i class="fa-solid fa-fire"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="memberSince">—</span>
+          <span class="stat-label">Üyelik Ayı</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dash-grid">
+
+      <!-- Membership Card -->
+      <div class="membership-card">
+        <div class="membership-card-header">
+          <h3><i class="fa-solid fa-id-card"></i> Üyelik Planım</h3>
+          <span class="badge badge-success" id="membershipStatus">Aktif</span>
+        </div>
+        <span class="plan-name" id="planName">Üyelik Yok</span>
+        <div class="membership-meta">
+          <div class="meta-item">
+            <span class="meta-label">Başlangıç</span>
+            <span class="meta-value" id="startDate">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Bitiş</span>
+            <span class="meta-value" id="endDate">—</span>
+          </div>
+        </div>
+        <div class="membership-progress">
+          <div class="progress-label">
+            <span>İlerleme</span>
+            <span id="progressPct">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+        </div>
+        <a href="membership.html" class="btn btn-outline btn-sm mt-3">Plan Yönet</a>
+      </div>
+
+      <!-- Upcoming Bookings -->
+      <div class="section-card">
+        <div class="section-card-header">
+          <h3><i class="fa-solid fa-calendar"></i> Yaklaşan Derslerim</h3>
+          <a href="booking.html" class="btn btn-primary btn-sm">+ Rezervasyon</a>
+        </div>
+        <div class="booking-list" id="bookingList">
+          <div class="empty-state">
+            <i class="fa-regular fa-calendar-xmark"></i>
+            <p>Henüz rezervasyonun yok.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="section-card">
+        <div class="section-card-header">
+          <h3><i class="fa-solid fa-bolt"></i> Hızlı Erişim</h3>
+        </div>
+        <div class="quick-links">
+          <a href="booking.html" class="quick-link">
+            <i class="fa-solid fa-calendar-plus"></i> Ders Rezervasyon
+          </a>
+          <a href="exercises.html" class="quick-link">
+            <i class="fa-solid fa-dumbbell"></i> Egzersiz Rehberi
+          </a>
+          <a href="membership.html" class="quick-link">
+            <i class="fa-solid fa-id-card"></i> Üyelik Planları
+          </a>
+          <a href="profile.html" class="quick-link">
+            <i class="fa-solid fa-user"></i> Profilim
+          </a>
+        </div>
+      </div>
+
+      <!-- Profile Summary -->
+      <div class="section-card">
+        <div class="section-card-header">
+          <h3><i class="fa-solid fa-user-circle"></i> Profil Özeti</h3>
+          <a href="profile.html" class="btn btn-ghost btn-sm">Düzenle</a>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          <div style="display:flex; justify-content:space-between; padding:0.75rem; background:var(--surface2); border-radius:var(--radius); border:1px solid var(--border)">
+            <span class="text-muted" style="font-size:0.85rem;">E-posta</span>
+            <span style="font-size:0.85rem; font-weight:600;" id="profileEmail">—</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:0.75rem; background:var(--surface2); border-radius:var(--radius); border:1px solid var(--border)">
+            <span class="text-muted" style="font-size:0.85rem;">Rol</span>
+            <span class="badge badge-primary" id="profileRole">Üye</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:0.75rem; background:var(--surface2); border-radius:var(--radius); border:1px solid var(--border)">
+            <span class="text-muted" style="font-size:0.85rem;">Kayıt Tarihi</span>
+            <span style="font-size:0.85rem; font-weight:600;" id="profileCreated">—</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 
