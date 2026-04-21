@@ -20,38 +20,206 @@
         <li><a href="membership.html" class="navbar-link">Üyelik</a></li>
         <li><a href="booking.html" class="navbar-link">Rezervasyon</a></li>
         <li><a href="exercises.html" class="navbar-link">Egzersizler</a></li>
+        <li><a href="admin.html" class="navbar-link active">Admin</a></li>
       </ul>
-      <div class="navbar-actions">
-        <!-- Injected by main.js when logged in -->
-      </div>
-      <button class="hamburger" aria-label="Menü">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="navbar-actions" id="navActions"></div>
+      <button class="hamburger" aria-label="Menü"><span></span><span></span><span></span></button>
     </div>
   </nav>
 
   <div class="mobile-menu">
     <a href="dashboard.html" class="navbar-link">Dashboard</a>
-    <a href="membership.html" class="navbar-link">Üyelik</a>
-    <a href="booking.html" class="navbar-link">Rezervasyon</a>
-    <a href="exercises.html" class="navbar-link">Egzersizler</a>
+    <a href="admin.html" class="navbar-link">Admin</a>
   </div>
 
-  <!-- PAGE CONTENT — Admin Paneli -->
-  <main class="page-content container" id="adminPage">
-    <div class="page-header">
-      <h2>Admin Paneli</h2>
+  <main class="container" style="padding: 2rem 0;">
+
+    <div class="admin-header">
+      <div>
+        <h2>⚙️ Admin <span class="text-primary">Paneli</span></h2>
+        <p class="text-muted">Sistemi yönet, dersleri düzenle, üyeleri takip et.</p>
+      </div>
+      <span class="badge badge-danger">Admin</span>
     </div>
-    <!-- TODO: Implement Admin Paneli content -->
-    <div class="card mt-3">
-      <p class="text-muted">Bu sayfa geliştirme aşamasındadır.</p>
+
+    <div class="alert" id="adminAlert"></div>
+
+    <!-- Stats -->
+    <div class="admin-stats">
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon orange"><i class="fa-solid fa-users"></i></div>
+        <div>
+          <span class="admin-stat-value" id="statUsers">—</span>
+          <span class="admin-stat-label">Toplam Üye</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon green"><i class="fa-solid fa-id-card"></i></div>
+        <div>
+          <span class="admin-stat-value" id="statActiveMemberships">—</span>
+          <span class="admin-stat-label">Aktif Üyelik</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon blue"><i class="fa-solid fa-calendar-check"></i></div>
+        <div>
+          <span class="admin-stat-value" id="statBookings">—</span>
+          <span class="admin-stat-label">Rezervasyon</span>
+        </div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon amber"><i class="fa-solid fa-chalkboard-user"></i></div>
+        <div>
+          <span class="admin-stat-value" id="statClasses">—</span>
+          <span class="admin-stat-label">Aktif Ders</span>
+        </div>
+      </div>
     </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="classes">Dersler</button>
+      <button class="admin-tab" data-tab="users">Üyeler</button>
+      <button class="admin-tab" data-tab="memberships">Üyelikler</button>
+      <button class="admin-tab" data-tab="bookings">Rezervasyonlar</button>
+    </div>
+
+    <!-- TAB: Dersler -->
+    <div id="tab-classes">
+      <!-- Add Class Form -->
+      <div class="add-class-form">
+        <h3><i class="fa-solid fa-plus"></i> Yeni Ders Ekle</h3>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Ders Adı</label>
+            <input type="text" class="form-input" id="className" placeholder="Yoga, CrossFit..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Eğitmen</label>
+            <input type="text" class="form-input" id="classInstructor" placeholder="Eğitmen adı" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kapasite</label>
+            <input type="number" class="form-input" id="classCapacity" placeholder="20" min="1" />
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group" style="grid-column: span 2">
+            <label class="form-label">Tarih & Saat</label>
+            <input type="datetime-local" class="form-input" id="classSchedule" />
+          </div>
+          <div class="form-group" style="display:flex; align-items:flex-end;">
+            <button class="btn btn-primary btn-full" id="addClassBtn">
+              <i class="fa-solid fa-plus"></i> Ekle
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Classes Table -->
+      <div class="admin-table-wrap">
+        <div class="admin-table-header">
+          <h3>Tüm Dersler</h3>
+        </div>
+        <div class="table-scroll">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Ders</th>
+                <th>Eğitmen</th>
+                <th>Tarih & Saat</th>
+                <th>Kapasite</th>
+                <th>Rezervasyon</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="classesTableBody">
+              <tr><td colspan="6" style="text-align:center; color:var(--muted);">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Üyeler -->
+    <div id="tab-users" class="hidden">
+      <div class="admin-table-wrap">
+        <div class="admin-table-header">
+          <h3>Kayıtlı Üyeler</h3>
+        </div>
+        <div class="table-scroll">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Ad Soyad</th>
+                <th>E-posta</th>
+                <th>Rol</th>
+                <th>Kayıt Tarihi</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--muted);">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Üyelikler -->
+    <div id="tab-memberships" class="hidden">
+      <div class="admin-table-wrap">
+        <div class="admin-table-header">
+          <h3>Aktif Üyelikler</h3>
+        </div>
+        <div class="table-scroll">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Kullanıcı</th>
+                <th>Plan</th>
+                <th>Başlangıç</th>
+                <th>Bitiş</th>
+                <th>Durum</th>
+              </tr>
+            </thead>
+            <tbody id="membershipsTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--muted);">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Rezervasyonlar -->
+    <div id="tab-bookings" class="hidden">
+      <div class="admin-table-wrap">
+        <div class="admin-table-header">
+          <h3>Tüm Rezervasyonlar</h3>
+        </div>
+        <div class="table-scroll">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Kullanıcı</th>
+                <th>Ders</th>
+                <th>Tarih</th>
+                <th>Durum</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="bookingsTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--muted);">Yükleniyor...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <footer class="footer">
-    <div class="container">
-      <p>© 2025 <span>BYEM GYM</span></p>
-    </div>
+    <div class="container"><p>© 2025 <span>BYEM GYM</span></p></div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
