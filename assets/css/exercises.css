@@ -1,0 +1,191 @@
+/* ============================================================
+   BYEM GYM — exercises.css
+   ============================================================ */
+
+.exercises-hero {
+  text-align: center;
+  padding: 3rem 0 2rem;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(249,115,22,0.08) 0%, transparent 70%);
+}
+
+.exercises-hero h2 { color: var(--text); margin-bottom: 0.5rem; }
+.exercises-hero p  { max-width: 480px; margin: 0 auto; }
+
+/* Search & Filter */
+.search-filter-bar {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  margin: 2rem 0 1.5rem;
+  align-items: center;
+}
+
+.search-wrap {
+  flex: 2;
+  min-width: 200px;
+  position: relative;
+}
+
+.search-wrap i {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.search-wrap input {
+  padding-left: 2.4rem;
+}
+
+.search-filter-bar .form-select {
+  flex: 1;
+  min-width: 130px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.88rem;
+}
+
+/* Exercise Grid */
+.exercises-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.exercise-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform var(--transition), border-color var(--transition);
+  cursor: pointer;
+}
+
+.exercise-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+}
+
+.exercise-card-header {
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(249,115,22,0.06), transparent);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.exercise-muscle-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius);
+  background: rgba(249,115,22,0.12);
+  color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.exercise-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--text);
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+
+.exercise-card-body { padding: 1rem 1.25rem; }
+
+.exercise-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.exercise-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+.tag-muscle     { background: rgba(249,115,22,0.12); color: var(--primary); }
+.tag-equipment  { background: rgba(59,130,246,0.12); color: #3b82f6; }
+.tag-difficulty { background: rgba(251,191,36,0.12); color: var(--accent); }
+
+.exercise-instructions {
+  font-size: 0.83rem;
+  color: var(--muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Load more */
+.load-more-wrap { text-align: center; margin-bottom: 2rem; }
+
+/* Detail Modal */
+.modal-exercise-name {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--text);
+  text-transform: capitalize;
+  margin-bottom: 0.75rem;
+}
+
+.modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.modal-instructions {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.7;
+  max-height: 220px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.modal-close-btn { width: 100%; }
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+.skeleton-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  height: 200px;
+}
+
+/* Responsive */
+@media (max-width: 900px) { .exercises-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) {
+  .exercises-grid { grid-template-columns: 1fr; }
+  .search-filter-bar { flex-direction: column; }
+  .search-wrap { width: 100%; }
+}
