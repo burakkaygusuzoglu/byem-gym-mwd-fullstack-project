@@ -17,16 +17,13 @@
       <a href="../index.html" class="navbar-brand">BYEM<span>GYM</span></a>
       <ul class="navbar-menu">
         <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
-        <li><a href="membership.html" class="navbar-link">Üyelik</a></li>
+        <li><a href="membership.html" class="navbar-link active">Üyelik</a></li>
         <li><a href="booking.html" class="navbar-link">Rezervasyon</a></li>
         <li><a href="exercises.html" class="navbar-link">Egzersizler</a></li>
+        <li><a href="profile.html" class="navbar-link">Profilim</a></li>
       </ul>
-      <div class="navbar-actions">
-        <!-- Injected by main.js when logged in -->
-      </div>
-      <button class="hamburger" aria-label="Menü">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="navbar-actions" id="navActions"></div>
+      <button class="hamburger" aria-label="Menü"><span></span><span></span><span></span></button>
     </div>
   </nav>
 
@@ -35,23 +32,164 @@
     <a href="membership.html" class="navbar-link">Üyelik</a>
     <a href="booking.html" class="navbar-link">Rezervasyon</a>
     <a href="exercises.html" class="navbar-link">Egzersizler</a>
+    <a href="profile.html" class="navbar-link">Profilim</a>
   </div>
 
-  <!-- PAGE CONTENT — Üyelik Planları -->
-  <main class="page-content container" id="membershipPage">
-    <div class="page-header">
-      <h2>Üyelik Planları</h2>
+  <main class="container">
+
+    <!-- Hero -->
+    <div class="membership-hero">
+      <h2>Sana Uygun <span class="text-primary">Planı Seç</span></h2>
+      <p>Hedefine ulaşmak için en iyi planı seç. İstediğin zaman iptal et.</p>
+
+      <!-- Billing Toggle -->
+      <div class="billing-toggle">
+        <span>Aylık</span>
+        <div class="toggle-switch" id="billingToggle">
+          <div class="toggle-knob"></div>
+        </div>
+        <span>Yıllık <span class="save-badge">%20 İndirim</span></span>
+      </div>
     </div>
-    <!-- TODO: Implement Üyelik Planları content -->
-    <div class="card mt-3">
-      <p class="text-muted">Bu sayfa geliştirme aşamasındadır.</p>
+
+    <!-- Active Plan Banner -->
+    <div class="active-plan-banner hidden" id="activePlanBanner">
+      <div class="active-plan-info">
+        <div class="active-plan-dot"></div>
+        <div class="active-plan-text">
+          <strong id="activePlanName">—</strong>
+          <span id="activePlanDate">—</span>
+        </div>
+      </div>
+      <button class="btn btn-danger btn-sm" id="cancelPlanBtn">Planı İptal Et</button>
     </div>
+
+    <!-- Plans -->
+    <div class="plans-grid">
+
+      <!-- Basic -->
+      <div class="plan-card" data-plan="Temel Plan" data-monthly="199" data-annual="159">
+        <div class="plan-header">
+          <div class="plan-icon basic"><i class="fa-solid fa-dumbbell"></i></div>
+          <span class="plan-name">Temel</span>
+          <p class="plan-desc">Spor salonuna ilk adımını atanlar için.</p>
+        </div>
+        <div class="plan-price">
+          <span class="price-amount" data-monthly="199" data-annual="159">199</span>
+          <span class="price-period">₺ / ay</span>
+          <span class="price-annual hidden">Yıllık: 1.908₺ (aylık 159₺)</span>
+        </div>
+        <div class="plan-features">
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Spor salonu erişimi</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Soyunma odası kullanımı</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Temel ekipman erişimi</div>
+          <div class="feature-item excluded"><i class="fa-solid fa-xmark"></i> Grup dersleri</div>
+          <div class="feature-item excluded"><i class="fa-solid fa-xmark"></i> Kişisel antrenör</div>
+          <div class="feature-item excluded"><i class="fa-solid fa-xmark"></i> Misafir getirme hakkı</div>
+        </div>
+        <button class="btn btn-outline btn-full plan-btn" onclick="openPlanModal(this)">Planı Seç</button>
+      </div>
+
+      <!-- Classic (Popular) -->
+      <div class="plan-card popular" data-plan="Klasik Plan" data-monthly="349" data-annual="279">
+        <div class="popular-badge">⭐ En Popüler</div>
+        <div class="plan-header">
+          <div class="plan-icon classic"><i class="fa-solid fa-fire"></i></div>
+          <span class="plan-name">Klasik</span>
+          <p class="plan-desc">Düzenli spor yapanlar için tam donanımlı paket.</p>
+        </div>
+        <div class="plan-price">
+          <span class="price-amount" data-monthly="349" data-annual="279">349</span>
+          <span class="price-period">₺ / ay</span>
+          <span class="price-annual hidden">Yıllık: 3.348₺ (aylık 279₺)</span>
+        </div>
+        <div class="plan-features">
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Spor salonu erişimi</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Soyunma odası kullanımı</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Tüm ekipman erişimi</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Grup dersleri (sınırsız)</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Egzersiz rehberi</div>
+          <div class="feature-item excluded"><i class="fa-solid fa-xmark"></i> Kişisel antrenör</div>
+        </div>
+        <button class="btn btn-primary btn-full plan-btn" onclick="openPlanModal(this)">Planı Seç</button>
+      </div>
+
+      <!-- Elite -->
+      <div class="plan-card" data-plan="Elite Plan" data-monthly="599" data-annual="479">
+        <div class="plan-header">
+          <div class="plan-icon elite"><i class="fa-solid fa-crown"></i></div>
+          <span class="plan-name">Elite</span>
+          <p class="plan-desc">Maksimum performans için eksiksiz deneyim.</p>
+        </div>
+        <div class="plan-price">
+          <span class="price-amount" data-monthly="599" data-annual="479">599</span>
+          <span class="price-period">₺ / ay</span>
+          <span class="price-annual hidden">Yıllık: 5.748₺ (aylık 479₺)</span>
+        </div>
+        <div class="plan-features">
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Spor salonu erişimi</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Soyunma odası kullanımı</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Tüm ekipman erişimi</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Grup dersleri (sınırsız)</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Egzersiz rehberi</div>
+          <div class="feature-item included"><i class="fa-solid fa-check"></i> Aylık 4 kişisel antrenör</div>
+        </div>
+        <button class="btn btn-outline btn-full plan-btn" onclick="openPlanModal(this)">Planı Seç</button>
+      </div>
+
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+      <h3>Sık Sorulan <span class="text-primary">Sorular</span></h3>
+
+      <div class="faq-item">
+        <div class="faq-question">İstediğim zaman iptal edebilir miyim? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-answer"><p>Evet, planınızı istediğiniz zaman iptal edebilirsiniz. İptal işlemi sonraki fatura döneminden itibaren geçerli olur.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Plan değiştirebilir miyim? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-answer"><p>Evet, mevcut planınızı istediğiniz zaman yükseltebilir veya düşürebilirsiniz. Fark tutarı orantılı olarak hesaplanır.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Yıllık planda indirim nasıl işliyor? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-answer"><p>Yıllık plan seçtiğinizde toplam ücret peşin olarak alınır ve aylık fiyata kıyasla %20 indirim uygulanır.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Grup derslerine nasıl katılabilirim? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-answer"><p>Klasik veya Elite planınız varsa Rezervasyon sayfasından ders seçip online rezervasyon yapabilirsiniz.</p></div>
+      </div>
+    </div>
+
   </main>
 
-  <footer class="footer">
-    <div class="container">
-      <p>© 2025 <span>BYEM GYM</span></p>
+  <!-- Plan Modal -->
+  <div class="overlay" id="modalOverlay"></div>
+  <div class="modal" id="planModal">
+    <p class="modal-title">Planı Onayla</p>
+    <p class="text-muted" style="font-size:0.9rem;">Seçtiğin plan aşağıda özetlendi. Onaylamak için devam et.</p>
+
+    <div class="modal-plan-summary">
+      <div>
+        <span class="plan-name" id="modalPlanName">—</span>
+        <span class="text-muted" style="font-size:0.8rem;" id="modalBillingType">Aylık</span>
+      </div>
+      <div>
+        <span class="price-amount" id="modalPrice">—</span>
+        <span class="price-period">₺/ay</span>
+      </div>
     </div>
+
+    <div class="alert" id="modalAlert"></div>
+
+    <div style="display:flex; gap:0.75rem;">
+      <button class="btn btn-ghost btn-full" id="modalCancel">Vazgeç</button>
+      <button class="btn btn-primary btn-full" id="modalConfirm">Onayla</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container"><p>© 2025 <span>BYEM GYM</span></p></div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
