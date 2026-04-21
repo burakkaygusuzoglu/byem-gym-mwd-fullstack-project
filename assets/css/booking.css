@@ -1,0 +1,192 @@
+/* ============================================================
+   BYEM GYM — booking.css
+   ============================================================ */
+
+.booking-hero {
+  text-align: center;
+  padding: 3rem 0 2rem;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(249,115,22,0.08) 0%, transparent 70%);
+}
+
+.booking-hero h2 { color: var(--text); margin-bottom: 0.5rem; }
+.booking-hero p  { max-width: 480px; margin: 0 auto 2rem; }
+
+/* Filter Bar */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filter-bar label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.filter-bar .form-select {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.88rem;
+}
+
+/* Classes Grid */
+.classes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.class-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform var(--transition), border-color var(--transition);
+}
+
+.class-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+}
+
+.class-card-top {
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(249,115,22,0.08), transparent);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.class-type-icon {
+  width: 42px; height: 42px;
+  border-radius: var(--radius);
+  background: rgba(249,115,22,0.12);
+  color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.class-name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--text);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.class-instructor {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.capacity-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.capacity-ok    { background: rgba(34,197,94,0.12);  color: var(--success); }
+.capacity-low   { background: rgba(251,191,36,0.12); color: var(--accent); }
+.capacity-full  { background: rgba(239,68,68,0.12);  color: var(--danger); }
+
+.class-card-body { padding: 1rem 1.25rem; }
+
+.class-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.class-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.class-meta-item i { color: var(--primary); width: 14px; text-align: center; }
+
+/* My Bookings */
+.my-bookings-section {
+  margin-top: 2rem;
+}
+
+.my-bookings-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+}
+
+.my-booking-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  transition: border-color var(--transition);
+  flex-wrap: wrap;
+}
+
+.my-booking-card:hover { border-color: var(--primary); }
+
+.my-booking-info { display: flex; align-items: center; gap: 1rem; }
+
+.my-booking-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+
+.my-booking-name { font-weight: 600; color: var(--text); display: block; }
+.my-booking-time { font-size: 0.82rem; color: var(--muted); }
+
+/* Modal */
+.modal-class-detail {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.modal-class-detail .class-name { font-size: 1.2rem; margin-bottom: 0.5rem; }
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.detail-row span:last-child { color: var(--text); font-weight: 500; }
+
+/* Responsive */
+@media (max-width: 900px) { .classes-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .classes-grid { grid-template-columns: 1fr; } .filter-bar { flex-direction: column; align-items: flex-start; } }

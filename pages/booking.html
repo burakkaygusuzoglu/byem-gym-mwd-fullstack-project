@@ -18,15 +18,12 @@
       <ul class="navbar-menu">
         <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
         <li><a href="membership.html" class="navbar-link">Üyelik</a></li>
-        <li><a href="booking.html" class="navbar-link">Rezervasyon</a></li>
+        <li><a href="booking.html" class="navbar-link active">Rezervasyon</a></li>
         <li><a href="exercises.html" class="navbar-link">Egzersizler</a></li>
+        <li><a href="profile.html" class="navbar-link">Profilim</a></li>
       </ul>
-      <div class="navbar-actions">
-        <!-- Injected by main.js when logged in -->
-      </div>
-      <button class="hamburger" aria-label="Menü">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="navbar-actions" id="navActions"></div>
+      <button class="hamburger" aria-label="Menü"><span></span><span></span><span></span></button>
     </div>
   </nav>
 
@@ -35,23 +32,86 @@
     <a href="membership.html" class="navbar-link">Üyelik</a>
     <a href="booking.html" class="navbar-link">Rezervasyon</a>
     <a href="exercises.html" class="navbar-link">Egzersizler</a>
+    <a href="profile.html" class="navbar-link">Profilim</a>
   </div>
 
-  <!-- PAGE CONTENT — Ders Rezervasyon -->
-  <main class="page-content container" id="bookingPage">
-    <div class="page-header">
-      <h2>Ders Rezervasyon</h2>
+  <main class="container">
+
+    <div class="booking-hero">
+      <h2>Ders <span class="text-primary">Rezervasyonu</span></h2>
+      <p>Haftalık ders programını incele, istediğin derse hemen yer ayırt.</p>
     </div>
-    <!-- TODO: Implement Ders Rezervasyon content -->
-    <div class="card mt-3">
-      <p class="text-muted">Bu sayfa geliştirme aşamasındadır.</p>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <label>Filtrele:</label>
+      <select class="form-select" id="filterType">
+        <option value="">Tüm Dersler</option>
+        <option value="yoga">Yoga</option>
+        <option value="crossfit">CrossFit</option>
+        <option value="spinning">Spinning</option>
+        <option value="pilates">Pilates</option>
+        <option value="zumba">Zumba</option>
+      </select>
+      <select class="form-select" id="filterDay">
+        <option value="">Tüm Günler</option>
+        <option value="Pazartesi">Pazartesi</option>
+        <option value="Salı">Salı</option>
+        <option value="Çarşamba">Çarşamba</option>
+        <option value="Perşembe">Perşembe</option>
+        <option value="Cuma">Cuma</option>
+        <option value="Cumartesi">Cumartesi</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" id="clearFilter">Temizle</button>
     </div>
+
+    <!-- Alert -->
+    <div class="alert" id="bookingAlert"></div>
+
+    <!-- Classes Grid -->
+    <div class="classes-grid" id="classesGrid">
+      <div style="grid-column:1/-1; text-align:center; padding:3rem;">
+        <div class="spinner"></div>
+        <p class="mt-2">Dersler yükleniyor...</p>
+      </div>
+    </div>
+
+    <!-- My Bookings -->
+    <div class="my-bookings-section">
+      <h3>Rezervasyonlarım</h3>
+      <div id="myBookingsList">
+        <div class="empty-state card">
+          <i class="fa-regular fa-calendar-xmark"></i>
+          <p>Henüz rezervasyonun yok.</p>
+        </div>
+      </div>
+    </div>
+
   </main>
 
-  <footer class="footer">
-    <div class="container">
-      <p>© 2025 <span>BYEM GYM</span></p>
+  <!-- Booking Modal -->
+  <div class="overlay" id="modalOverlay"></div>
+  <div class="modal" id="bookingModal">
+    <p class="modal-title">Rezervasyon Onayla</p>
+    <p class="text-muted" style="font-size:0.88rem;">Aşağıdaki derse kaydolmak istediğinden emin misin?</p>
+
+    <div class="modal-class-detail">
+      <span class="class-name" id="modalClassName">—</span>
+      <div class="detail-row"><span>Eğitmen</span><span id="modalInstructor">—</span></div>
+      <div class="detail-row"><span>Tarih & Saat</span><span id="modalSchedule">—</span></div>
+      <div class="detail-row"><span>Kapasite</span><span id="modalCapacity">—</span></div>
     </div>
+
+    <div class="alert" id="modalAlert"></div>
+
+    <div style="display:flex; gap:0.75rem;">
+      <button class="btn btn-ghost btn-full" id="modalCancel">Vazgeç</button>
+      <button class="btn btn-primary btn-full" id="modalConfirm">Rezervasyon Yap</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container"><p>© 2025 <span>BYEM GYM</span></p></div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

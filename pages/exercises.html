@@ -19,14 +19,11 @@
         <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
         <li><a href="membership.html" class="navbar-link">Üyelik</a></li>
         <li><a href="booking.html" class="navbar-link">Rezervasyon</a></li>
-        <li><a href="exercises.html" class="navbar-link">Egzersizler</a></li>
+        <li><a href="exercises.html" class="navbar-link active">Egzersizler</a></li>
+        <li><a href="profile.html" class="navbar-link">Profilim</a></li>
       </ul>
-      <div class="navbar-actions">
-        <!-- Injected by main.js when logged in -->
-      </div>
-      <button class="hamburger" aria-label="Menü">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="navbar-actions" id="navActions"></div>
+      <button class="hamburger" aria-label="Menü"><span></span><span></span><span></span></button>
     </div>
   </nav>
 
@@ -35,23 +32,81 @@
     <a href="membership.html" class="navbar-link">Üyelik</a>
     <a href="booking.html" class="navbar-link">Rezervasyon</a>
     <a href="exercises.html" class="navbar-link">Egzersizler</a>
+    <a href="profile.html" class="navbar-link">Profilim</a>
   </div>
 
-  <!-- PAGE CONTENT — Egzersiz Rehberi -->
-  <main class="page-content container" id="exercisesPage">
-    <div class="page-header">
-      <h2>Egzersiz Rehberi</h2>
+  <main class="container">
+
+    <div class="exercises-hero">
+      <h2>Egzersiz <span class="text-primary">Rehberi</span></h2>
+      <p>1300+ egzersizi keşfet. Kas grubuna, ekipmana ve zorluk seviyesine göre filtrele.</p>
     </div>
-    <!-- TODO: Implement Egzersiz Rehberi content -->
-    <div class="card mt-3">
-      <p class="text-muted">Bu sayfa geliştirme aşamasındadır.</p>
+
+    <!-- Search & Filter -->
+    <div class="search-filter-bar">
+      <div class="search-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" class="form-input" id="searchInput" placeholder="Egzersiz ara..." />
+      </div>
+      <select class="form-select" id="filterMuscle">
+        <option value="">Tüm Kaslar</option>
+        <option value="chest">Göğüs</option>
+        <option value="middle_back">Sırt (Orta)</option>
+        <option value="lower_back">Sırt (Alt)</option>
+        <option value="lats">Sırt (Lat)</option>
+        <option value="shoulders">Omuzlar</option>
+        <option value="biceps">Biceps</option>
+        <option value="triceps">Triceps</option>
+        <option value="forearms">Ön Kol</option>
+        <option value="quadriceps">Quadriceps</option>
+        <option value="hamstrings">Hamstrings</option>
+        <option value="calves">Baldır</option>
+        <option value="glutes">Kalça</option>
+        <option value="abdominals">Karın</option>
+        <option value="traps">Trapez</option>
+        <option value="neck">Boyun</option>
+      </select>
+      <select class="form-select" id="filterDifficulty">
+        <option value="">Tüm Seviyeler</option>
+        <option value="beginner">Başlangıç</option>
+        <option value="intermediate">Orta</option>
+        <option value="expert">İleri</option>
+      </select>
+      <button class="btn btn-primary btn-sm" id="searchBtn">
+        <i class="fa-solid fa-search"></i> Ara
+      </button>
     </div>
+
+    <div class="alert" id="exerciseAlert"></div>
+
+    <!-- Grid -->
+    <div class="exercises-grid" id="exercisesGrid">
+      <!-- Skeleton -->
+      <div class="skeleton-card skeleton"></div>
+      <div class="skeleton-card skeleton"></div>
+      <div class="skeleton-card skeleton"></div>
+      <div class="skeleton-card skeleton"></div>
+      <div class="skeleton-card skeleton"></div>
+      <div class="skeleton-card skeleton"></div>
+    </div>
+
+    <div class="load-more-wrap hidden" id="loadMoreWrap">
+      <button class="btn btn-outline" id="loadMoreBtn">Daha Fazla Yükle</button>
+    </div>
+
   </main>
 
+  <!-- Detail Modal -->
+  <div class="overlay" id="modalOverlay"></div>
+  <div class="modal" id="exerciseModal">
+    <p class="modal-exercise-name" id="modalName">—</p>
+    <div class="modal-tags" id="modalTags"></div>
+    <div class="modal-instructions" id="modalInstructions">—</div>
+    <button class="btn btn-ghost modal-close-btn" id="modalClose">Kapat</button>
+  </div>
+
   <footer class="footer">
-    <div class="container">
-      <p>© 2025 <span>BYEM GYM</span></p>
-    </div>
+    <div class="container"><p>© 2025 <span>BYEM GYM</span></p></div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
