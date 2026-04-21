@@ -20,13 +20,10 @@
         <li><a href="membership.html" class="navbar-link">Üyelik</a></li>
         <li><a href="booking.html" class="navbar-link">Rezervasyon</a></li>
         <li><a href="exercises.html" class="navbar-link">Egzersizler</a></li>
+        <li><a href="profile.html" class="navbar-link active">Profilim</a></li>
       </ul>
-      <div class="navbar-actions">
-        <!-- Injected by main.js when logged in -->
-      </div>
-      <button class="hamburger" aria-label="Menü">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="navbar-actions" id="navActions"></div>
+      <button class="hamburger" aria-label="Menü"><span></span><span></span><span></span></button>
     </div>
   </nav>
 
@@ -35,23 +32,145 @@
     <a href="membership.html" class="navbar-link">Üyelik</a>
     <a href="booking.html" class="navbar-link">Rezervasyon</a>
     <a href="exercises.html" class="navbar-link">Egzersizler</a>
+    <a href="profile.html" class="navbar-link">Profilim</a>
   </div>
 
-  <!-- PAGE CONTENT — Profilim -->
-  <main class="page-content container" id="profilePage">
-    <div class="page-header">
-      <h2>Profilim</h2>
-    </div>
-    <!-- TODO: Implement Profilim content -->
-    <div class="card mt-3">
-      <p class="text-muted">Bu sayfa geliştirme aşamasındadır.</p>
-    </div>
-  </main>
+  <div class="container profile-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="profile-sidebar">
+
+      <div class="profile-avatar-card">
+        <div class="avatar-circle" id="avatarInitial">?</div>
+        <span class="profile-name" id="sidebarName">—</span>
+        <span class="profile-email" id="sidebarEmail">—</span>
+        <span class="badge badge-primary" id="sidebarRole">Üye</span>
+      </div>
+
+      <nav class="profile-nav">
+        <div class="profile-nav-item active" data-tab="info">
+          <i class="fa-solid fa-user"></i> Kişisel Bilgiler
+        </div>
+        <div class="profile-nav-item" data-tab="membership">
+          <i class="fa-solid fa-id-card"></i> Üyelik Durumu
+        </div>
+        <div class="profile-nav-item" data-tab="security">
+          <i class="fa-solid fa-lock"></i> Güvenlik
+        </div>
+      </nav>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="profile-main">
+
+      <div class="alert" id="profileAlert"></div>
+
+      <!-- Tab: Kişisel Bilgiler -->
+      <div class="profile-section" id="tab-info">
+        <div class="profile-section-header">
+          <h3><i class="fa-solid fa-user"></i> Kişisel Bilgiler</h3>
+          <button class="btn btn-primary btn-sm" id="saveInfoBtn">Kaydet</button>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Ad</label>
+            <input type="text" class="form-input" id="firstName" placeholder="Adın" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Soyad</label>
+            <input type="text" class="form-input" id="lastName" placeholder="Soyadın" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">E-posta</label>
+          <input type="email" class="form-input" id="emailInput" disabled />
+          <small class="text-muted" style="font-size:0.78rem; margin-top:0.3rem; display:block;">E-posta değiştirilemez.</small>
+        </div>
+
+        <!-- Stats -->
+        <div class="divider"></div>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <span class="profile-stat-value" id="statBookings">0</span>
+            <span class="profile-stat-label">Rezervasyon</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat-value" id="statDaysLeft">0</span>
+            <span class="profile-stat-label">Gün Kaldı</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat-value" id="statMonths">0</span>
+            <span class="profile-stat-label">Üyelik Ayı</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Üyelik Durumu -->
+      <div class="profile-section hidden" id="tab-membership">
+        <div class="profile-section-header">
+          <h3><i class="fa-solid fa-id-card"></i> Üyelik Durumu</h3>
+          <a href="membership.html" class="btn btn-outline btn-sm">Plan Değiştir</a>
+        </div>
+
+        <div id="membershipInfoContent">
+          <div class="membership-info-row">
+            <span>Plan</span>
+            <span id="mPlan">—</span>
+          </div>
+          <div class="membership-info-row">
+            <span>Durum</span>
+            <span id="mStatus">—</span>
+          </div>
+          <div class="membership-info-row">
+            <span>Başlangıç</span>
+            <span id="mStart">—</span>
+          </div>
+          <div class="membership-info-row">
+            <span>Bitiş</span>
+            <span id="mEnd">—</span>
+          </div>
+          <div class="membership-info-row">
+            <span>Kalan Gün</span>
+            <span id="mDaysLeft">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Güvenlik -->
+      <div class="profile-section hidden" id="tab-security">
+        <div class="profile-section-header">
+          <h3><i class="fa-solid fa-lock"></i> Güvenlik</h3>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Yeni Şifre</label>
+          <input type="password" class="form-input" id="newPassword" placeholder="En az 6 karakter" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Şifre Tekrar</label>
+          <input type="password" class="form-input" id="confirmPassword" placeholder="Şifreni tekrar gir" />
+        </div>
+        <button class="btn btn-primary" id="changePasswordBtn">Şifreyi Güncelle</button>
+
+        <div class="divider"></div>
+
+        <div class="profile-section danger-zone" style="margin-top:0; border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.03);">
+          <div class="profile-section-header" style="margin-bottom:0.75rem;">
+            <h3 style="color:var(--danger); font-size:1rem;"><i class="fa-solid fa-triangle-exclamation"></i> Tehlikeli Bölge</h3>
+          </div>
+          <p style="font-size:0.85rem; margin-bottom:1rem;">Oturumu kapat ve tüm cihazlardan çıkış yap.</p>
+          <button class="btn btn-danger btn-sm" id="signOutAllBtn">Tüm Cihazlardan Çıkış</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
 
   <footer class="footer">
-    <div class="container">
-      <p>© 2025 <span>BYEM GYM</span></p>
-    </div>
+    <div class="container"><p>© 2025 <span>BYEM GYM</span></p></div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
