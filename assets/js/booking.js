@@ -6,6 +6,7 @@ let allClasses   = [];
 let selectedClass = {};
 
 const DAYS_TR   = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+const DAYS_EN   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const TYPE_ICONS = { yoga:'fa-spa', crossfit:'fa-dumbbell', spinning:'fa-bicycle', pilates:'fa-person', zumba:'fa-music' };
 
 $(document).ready(async function () {
@@ -35,6 +36,9 @@ async function loadClasses() {
 }
 
 async function renderClasses() {
+  const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
+  const dayLabels = locale === 'en-US' ? DAYS_EN : DAYS_TR;
+
   const filterType = $('#filterType').val();
   const filterDay  = $('#filterDay').val();
 
@@ -65,9 +69,9 @@ async function renderClasses() {
     const capText  = isFull ? 'Dolu' : `${left} yer kaldı`;
     const icon     = TYPE_ICONS[c.type] || 'fa-dumbbell';
     const dt       = new Date(c.schedule);
-    const dayName  = DAYS_TR[dt.getDay()];
-    const timeStr  = dt.toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
-    const dateStr  = dt.toLocaleDateString('tr-TR', { day:'2-digit', month:'short' });
+    const dayName  = dayLabels[dt.getDay()];
+    const timeStr  = dt.toLocaleTimeString(locale, { hour:'2-digit', minute:'2-digit' });
+    const dateStr  = dt.toLocaleDateString(locale, { day:'2-digit', month:'short' });
 
     $('#classesGrid').append(`
       <div class="class-card">
@@ -104,7 +108,8 @@ async function loadMyBookings() {
     $('#myBookingsList').empty();
     data.forEach(b => {
       const cls = b.classes;
-      const dt  = new Date(cls?.schedule).toLocaleString('tr-TR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+      const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
+      const dt  = new Date(cls?.schedule).toLocaleString(locale, { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
       $('#myBookingsList').append(`
         <div class="my-booking-card">
           <div class="my-booking-info">
@@ -123,7 +128,8 @@ async function loadMyBookings() {
 
 window.openBookingModal = function (cls) {
   selectedClass = cls;
-  const dt = new Date(cls.schedule).toLocaleString('tr-TR', { day:'2-digit', month:'long', hour:'2-digit', minute:'2-digit' });
+  const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
+  const dt = new Date(cls.schedule).toLocaleString(locale, { day:'2-digit', month:'long', hour:'2-digit', minute:'2-digit' });
   $('#modalClassName').text(cls.name);
   $('#modalInstructor').text(cls.instructor);
   $('#modalSchedule').text(dt);

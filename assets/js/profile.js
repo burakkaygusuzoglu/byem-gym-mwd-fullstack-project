@@ -10,6 +10,14 @@ $(document).ready(async function () {
 
   /* ── Load profile ─────────────────────────────────────────── */
   await loadProfile(user);
+  refreshLanguageToggle();
+
+  $('#languageToggleBtn').on('click', function () {
+    const nextLang = (typeof getLang === 'function' && getLang() === 'en') ? 'tr' : 'en';
+    if (typeof setLang === 'function') {
+      setLang(nextLang);
+    }
+  });
 
   /* ── Tab navigation ───────────────────────────────────────── */
   $('.profile-nav-item').on('click', function () {
@@ -67,12 +75,11 @@ $(document).ready(async function () {
 
     setLoading($btn, true);
     try {
-      // Supabase auth üzerinden şifre değişimi
-      await supabaseClient.auth.updateUser({ password: newPass });
+      await AuthAPI.changePassword(newPass);
       showAlert('#profileAlert', '✅ Şifre başarıyla güncellendi!', 'success');
       $('#newPassword, #confirmPassword').val('');
     } catch (err) {
-      showAlert('#profileAlert', 'Şifre güncellenemedi.', 'error');
+      showAlert('#profileAlert', err.message || 'Şifre güncellenemedi.', 'error');
     }
     setLoading($btn, false);
   });
@@ -81,6 +88,19 @@ $(document).ready(async function () {
   $('#signOutAllBtn').on('click', function () { Auth.logout(); });
 
 });
+
+function refreshLanguageToggle() {
+  if (typeof getLang !== 'function') return;
+
+  const lang = getLang();
+  if (lang === 'en') {
+    $('#languageCurrentLabel').text('Current language: English');
+    $('#languageToggleBtn').text('Switch to Turkish');
+  } else {
+    $('#languageCurrentLabel').text('Mevcut dil: Türkçe');
+    $('#languageToggleBtn').text('Switch to English');
+  }
+}
 
 async function loadProfile(user) {
   const fullName  = user?.full_name || user?.email?.split('@')[0] || '';

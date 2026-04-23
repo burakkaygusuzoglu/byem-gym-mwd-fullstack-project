@@ -65,7 +65,13 @@ const AuthAPI = {
       body: JSON.stringify({ first_name, last_name, email, password })
     }),
 
-  me: () => apiFetch('/auth/me')
+  me: () => apiFetch('/auth/me'),
+
+  changePassword: (new_password) =>
+    apiFetch('/auth/password', {
+      method: 'PUT',
+      body: JSON.stringify({ new_password })
+    })
 };
 
 /* ── Classes API ──────────────────────────────────────────── */

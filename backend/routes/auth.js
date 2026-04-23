@@ -1,8 +1,14 @@
 const express  = require('express');
 const jwt      = require('jsonwebtoken');
 const bcrypt   = require('bcryptjs');
+const { createClient } = require('@supabase/supabase-js');
 const supabase = require('../supabase');
 const router   = express.Router();
+const authMiddle = require('../middleware/auth');
+
+const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+  : null;
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
@@ -72,6 +78,26 @@ router.get('/me', require('../middleware/auth'), async (req, res) => {
 
   if (error) return res.status(404).json({ error: 'Kullanıcı bulunamadı.' });
   return res.json(data);
+});
+
+// PUT /api/auth/password
+router.put('/password', authMiddle, async (req, res) => {
+  const { new_password } = req.body;
+
+  if (!new_password || new_password.length < 6) {
+    return res.status(400).json({ error: 'Yeni şifre en az 6 karakter olmalı.' });
+  }
+
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY eksik.' });
+  }
+
+  const { error } = await supabaseAdmin.auth.admin.updateUserById(req.user.id, {
+    password: new_password
+  });
+
+  if (error) return res.status(500).json({ error: error.message });
+  return res.json({ message: 'Şifre güncellendi.' });
 });
 
 module.exports = router;

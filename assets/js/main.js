@@ -5,6 +5,10 @@
 
 $(document).ready(function () {
 
+  if (typeof applyI18n === 'function') {
+    applyI18n();
+  }
+
   /* ── Navbar: hamburger toggle ────────────────────────────── */
   const $hamburger  = $('.hamburger');
   const $mobileMenu = $('.mobile-menu');
@@ -39,30 +43,32 @@ $(document).ready(function () {
   });
 
   /* ── Auth guard ──────────────────────────────────────────── */
+  const hasAuth = typeof Auth !== 'undefined';
   const protectedPages = ['dashboard.html', 'profile.html', 'booking.html', 'membership.html', 'exercises.html', 'admin.html'];
   const authPages      = ['login.html', 'register.html'];
   const isProtected    = protectedPages.some(p => currentPage.includes(p));
   const isAuthPage     = authPages.some(p => currentPage.includes(p));
 
-  if (isProtected && !Auth.isLoggedIn()) {
+  if (hasAuth && isProtected && !Auth.isLoggedIn()) {
     window.location.href = '../pages/login.html';
     return;
   }
 
-  if (isAuthPage && Auth.isLoggedIn()) {
+  if (hasAuth && isAuthPage && Auth.isLoggedIn()) {
     window.location.href = 'dashboard.html';
     return;
   }
 
   /* ── Navbar: logged-in state ─────────────────────────────── */
-  if (Auth.isLoggedIn()) {
+  if (hasAuth && Auth.isLoggedIn()) {
     const user    = Auth.getUser();
     const initial = (user?.full_name || user?.email || 'U').charAt(0).toUpperCase();
+    const logoutText = (typeof t === 'function') ? t('Çıkış') : 'Çıkış';
 
     $('#navActions').html(`
       <div style="display:flex;align-items:center;gap:0.75rem;">
         <div style="width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.95rem;">${initial}</div>
-        <button class="btn btn-ghost btn-sm" id="logoutBtn">Çıkış</button>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn">${logoutText}</button>
       </div>
     `);
 
@@ -97,5 +103,6 @@ window.setLoading = function ($btn, loading) {
 /* ── Format date ──────────────────────────────────────────── */
 window.formatDate = function (dateStr) {
   if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
+  return new Date(dateStr).toLocaleDateString(locale, { day: '2-digit', month: 'long', year: 'numeric' });
 };

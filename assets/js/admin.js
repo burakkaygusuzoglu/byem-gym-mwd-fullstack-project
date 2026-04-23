@@ -72,6 +72,7 @@ async function loadStats() {
 
 async function loadClasses() {
   try {
+    const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
     const data = await ClassesAPI.getAll();
     $('#classesTableBody').empty();
 
@@ -81,7 +82,7 @@ async function loadClasses() {
     }
 
     data.forEach(c => {
-      const dt = new Date(c.schedule).toLocaleString('tr-TR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+      const dt = new Date(c.schedule).toLocaleString(locale, { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
       $('#classesTableBody').append(`
         <tr>
           <td><strong>${c.name}</strong></td>
