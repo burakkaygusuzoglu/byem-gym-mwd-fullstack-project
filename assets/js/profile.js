@@ -1,28 +1,15 @@
 /* ============================================================
-   BYEM GYM — profile.js
+   BYEM GYM — profile.js — Backend API ile
    ============================================================ */
-
-let currentUser = null;
 
 $(document).ready(async function () {
 
-  /* ── Auth ─────────────────────────────────────────────────── */
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) { window.location.href = 'login.html'; return; }
-  currentUser = session.user;
+  if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
 
-  /* ── Navbar ───────────────────────────────────────────────── */
-  const initial = (currentUser.user_metadata?.full_name || currentUser.email).charAt(0).toUpperCase();
-  $('#navActions').html(`
-    <div style="display:flex;align-items:center;gap:0.75rem;">
-      <div style="width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">${initial}</div>
-      <button class="btn btn-ghost btn-sm" id="logoutBtn">Çıkış</button>
-    </div>
-  `);
-  $('#logoutBtn').on('click', async () => { await supabaseClient.auth.signOut(); window.location.href = '../index.html'; });
+  const user = Auth.getUser();
 
   /* ── Load profile ─────────────────────────────────────────── */
-  await loadProfile();
+  await loadProfile(user);
 
   /* ── Tab navigation ───────────────────────────────────────── */
   $('.profile-nav-item').on('click', function () {
@@ -45,27 +32,20 @@ $(document).ready(async function () {
     }
 
     setLoading($btn, true);
+    try {
+      const fullName = `${firstName} ${lastName}`;
+      await UsersAPI.updateMe(fullName);
 
-    const fullName = `${firstName} ${lastName}`;
+      // Update local storage
+      const updatedUser = { ...Auth.getUser(), full_name: fullName };
+      Auth.setUser(updatedUser);
 
-    // Update Supabase auth metadata
-    await supabaseClient.auth.updateUser({ data: { full_name: fullName, first_name: firstName, last_name: lastName } });
-
-    // Update profiles table
-    const { error } = await supabaseClient
-      .from('profiles')
-      .update({ full_name: fullName })
-      .eq('id', currentUser.id);
-
-    if (error) {
-      showAlert('#profileAlert', 'Güncelleme başarısız: ' + error.message, 'error');
-    } else {
       showAlert('#profileAlert', '✅ Profil güncellendi!', 'success');
       $('#sidebarName').text(fullName);
       $('#avatarInitial').text(firstName.charAt(0).toUpperCase());
-      localStorage.setItem('byem_user_profile', JSON.stringify({ full_name: fullName }));
+    } catch (err) {
+      showAlert('#profileAlert', err.message, 'error');
     }
-
     setLoading($btn, false);
   });
 
@@ -86,92 +66,61 @@ $(document).ready(async function () {
     }
 
     setLoading($btn, true);
-
-    const { error } = await supabaseClient.auth.updateUser({ password: newPass });
-
-    if (error) {
-      showAlert('#profileAlert', 'Şifre güncellenemedi: ' + error.message, 'error');
-    } else {
+    try {
+      // Supabase auth üzerinden şifre değişimi
+      await supabaseClient.auth.updateUser({ password: newPass });
       showAlert('#profileAlert', '✅ Şifre başarıyla güncellendi!', 'success');
       $('#newPassword, #confirmPassword').val('');
+    } catch (err) {
+      showAlert('#profileAlert', 'Şifre güncellenemedi.', 'error');
     }
-
     setLoading($btn, false);
   });
 
   /* ── Sign out all ─────────────────────────────────────────── */
-  $('#signOutAllBtn').on('click', async function () {
-    await supabaseClient.auth.signOut();
-    window.location.href = '../index.html';
-  });
+  $('#signOutAllBtn').on('click', function () { Auth.logout(); });
 
 });
 
-/* ── Load profile data ────────────────────────────────────── */
-async function loadProfile () {
-  const user = currentUser;
-  const fullName  = user.user_metadata?.full_name || user.email.split('@')[0];
-  const firstName = user.user_metadata?.first_name || fullName.split(' ')[0] || '';
-  const lastName  = user.user_metadata?.last_name  || fullName.split(' ')[1] || '';
+async function loadProfile(user) {
+  const fullName  = user?.full_name || user?.email?.split('@')[0] || '';
+  const firstName = fullName.split(' ')[0] || '';
+  const lastName  = fullName.split(' ').slice(1).join(' ') || '';
 
-  // Sidebar
   $('#avatarInitial').text(fullName.charAt(0).toUpperCase());
   $('#sidebarName').text(fullName);
-  $('#sidebarEmail').text(user.email);
-
-  // Form
+  $('#sidebarEmail').text(user?.email || '—');
   $('#firstName').val(firstName);
   $('#lastName').val(lastName);
-  $('#emailInput').val(user.email);
+  $('#emailInput').val(user?.email || '—');
 
-  // Fetch profile from DB
-  const { data: profile } = await supabaseClient
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  if (profile) {
-    const role = profile.role === 'admin' ? 'Admin' : 'Üye';
-    $('#sidebarRole').text(role);
+  try {
+    const profile = await UsersAPI.getMe();
+    $('#sidebarRole').text(profile.role === 'admin' ? 'Admin' : 'Üye');
 
     const created = new Date(profile.created_at);
     const now     = new Date();
     const months  = Math.max(1, Math.round((now - created) / (1000 * 60 * 60 * 24 * 30)));
     $('#statMonths').text(months);
-  }
+    $('#profileCreated').text(formatDate(profile.created_at));
+  } catch {}
 
-  // Fetch membership
-  const { data: membership } = await supabaseClient
-    .from('memberships')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('status', 'active')
-    .single();
-
-  if (membership) {
-    const end      = new Date(membership.end_date);
-    const now      = new Date();
-    const daysLeft = Math.max(0, Math.round((end - now) / (1000 * 60 * 60 * 24)));
-
-    $('#mPlan').text(membership.plan_name);
+  try {
+    const m = await MembershipsAPI.getMy();
+    const end      = new Date(m.end_date);
+    const daysLeft = Math.max(0, Math.round((end - new Date()) / (1000 * 60 * 60 * 24)));
+    $('#mPlan').text(m.plan_name);
     $('#mStatus').html('<span class="badge badge-success">Aktif</span>');
-    $('#mStart').text(formatDate(membership.start_date));
-    $('#mEnd').text(formatDate(membership.end_date));
+    $('#mStart').text(formatDate(m.start_date));
+    $('#mEnd').text(formatDate(m.end_date));
     $('#mDaysLeft').text(daysLeft + ' gün');
     $('#statDaysLeft').text(daysLeft);
-  } else {
-    $('#mPlan').text('—');
+  } catch {
     $('#mStatus').html('<span class="badge badge-danger">Pasif</span>');
-    $('#mStart, #mEnd, #mDaysLeft').text('—');
   }
 
-  // Fetch booking count
-  const { data: bookings } = await supabaseClient
-    .from('bookings')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('status', 'confirmed');
-
-  $('#statBookings').text(bookings?.length || 0);
+  try {
+    const bookings = await BookingsAPI.getMyBookings();
+    $('#statBookings').text(bookings?.length || 0);
+  } catch {}
 }
