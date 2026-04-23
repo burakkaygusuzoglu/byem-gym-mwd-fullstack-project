@@ -7,7 +7,7 @@
    https://api-ninjas.com/api/exercises
    ============================================================ */
 
-const EXERCISES_API_KEY = 'YOUR_API_NINJAS_KEY'; // ← Buraya key'ini yaz
+const EXERCISES_API_KEY = 'BCIIqo8AJEdHBJc3ddDiTig3t8W7MwOT97hulZj8'; // ← Buraya key'ini yaz
 
 const MUSCLE_LABELS = {
   chest:'Göğüs', back:'Sırt', shoulders:'Omuzlar',
