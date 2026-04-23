@@ -4,7 +4,7 @@
    Tüm fetch/AJAX çağrıları buradan yapılır
    ============================================================ */
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'https://byemgym.up.railway.app/api';
 
 /* ── Token yönetimi ───────────────────────────────────────── */
 const Auth = {
