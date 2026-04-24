@@ -1,7 +1,12 @@
 const express    = require('express');
+const { createClient } = require('@supabase/supabase-js');
 const supabase   = require('../supabase');
 const authMiddle = require('../middleware/auth');
 const router     = express.Router();
+
+const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+  : null;
 
 // GET /api/bookings/all — Tüm rezervasyonlar (admin)
 router.get('/all', authMiddle, async (req, res) => {
@@ -9,7 +14,11 @@ router.get('/all', authMiddle, async (req, res) => {
     return res.status(403).json({ error: 'Sadece adminler tüm rezervasyonları görebilir.' });
   }
 
-  const { data: bookings, error: bError } = await supabase
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY eksik.' });
+  }
+
+  const { data: bookings, error: bError } = await supabaseAdmin
     .from('bookings')
     .select('*, classes(*)')
     .order('booked_at', { ascending: false });
@@ -20,7 +29,7 @@ router.get('/all', authMiddle, async (req, res) => {
   let profileMap = {};
 
   if (userIds.length > 0) {
-    const { data: profiles, error: pError } = await supabase
+    const { data: profiles, error: pError } = await supabaseAdmin
       .from('profiles')
       .select('id, full_name, email')
       .in('id', userIds);
@@ -67,7 +76,7 @@ router.post('/', authMiddle, async (req, res) => {
     .eq('user_id', req.user.id)
     .eq('class_id', class_id)
     .eq('status', 'confirmed')
-    .single();
+    .maybeSingle();
 
   if (existing) return res.status(400).json({ error: 'Bu derse zaten kayıtlısın.' });
 

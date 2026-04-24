@@ -10,7 +10,8 @@ $(document).ready(async function () {
 
   /* ── Date ─────────────────────────────────────────────────── */
   const now = new Date();
-  $('#dashDate').text(now.toLocaleDateString('tr-TR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }));
+  const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
+  $('#dashDate').text(now.toLocaleDateString(locale, { weekday:'long', day:'numeric', month:'long', year:'numeric' }));
 
   /* ── User info ────────────────────────────────────────────── */
   const fullName = user?.full_name || user?.email?.split('@')[0] || 'Kullanıcı';
@@ -54,7 +55,7 @@ $(document).ready(async function () {
       $('#bookingList').empty();
       bookings.slice(0, 3).forEach(b => {
         const cls = b.classes;
-        const dt  = cls?.schedule ? new Date(cls.schedule).toLocaleString('tr-TR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
+        const dt  = cls?.schedule ? new Date(cls.schedule).toLocaleString(locale, { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
         $('#bookingList').append(`
           <div class="booking-item">
             <div class="booking-dot"></div>
