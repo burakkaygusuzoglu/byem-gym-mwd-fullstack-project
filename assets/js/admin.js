@@ -6,8 +6,18 @@ $(document).ready(async function () {
 
   if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
 
-  const user = Auth.getUser();
-  if (user?.role !== 'admin') {
+  let isAdmin = false;
+  try {
+    const me = await AuthAPI.me();
+    isAdmin = me?.role === 'admin';
+    if (me && typeof Auth.setUser === 'function') {
+      Auth.setUser(me);
+    }
+  } catch {
+    isAdmin = false;
+  }
+
+  if (!isAdmin) {
     $('main').html(`
       <div style="text-align:center; padding:5rem 1rem;">
         <i class="fa-solid fa-ban" style="font-size:3rem; color:var(--danger); display:block; margin-bottom:1rem;"></i>
