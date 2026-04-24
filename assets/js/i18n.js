@@ -75,9 +75,83 @@
     'Planı İptal Et': 'Cancel Plan',
     'Planı Seç': 'Select Plan',
     'Sık Sorulan Sorular': 'Frequently Asked Questions',
+    'Sık Sorulan': 'Frequently Asked',
+    'Sorular': 'Questions',
     'Planı Onayla': 'Confirm Plan',
     'Seçtiğin plan aşağıda özetlendi. Onaylamak için devam et.': 'Your selected plan is summarized below. Continue to confirm.',
     'Onayla': 'Confirm',
+    'Temel': 'Basic',
+    'Klasik': 'Classic',
+    'Temel Plan': 'Basic Plan',
+    'Klasik Plan': 'Classic Plan',
+    'Elite Plan': 'Elite Plan',
+    '⭐ En Popüler': '⭐ Most Popular',
+    'En Popüler': 'Most Popular',
+    'Spor salonuna ilk adımını atanlar için.': 'For those taking their first step into the gym.',
+    'Düzenli spor yapanlar için tam donanımlı paket.': 'A fully equipped package for regular training.',
+    'Maksimum performans için eksiksiz deneyim.': 'A complete experience for maximum performance.',
+    'Spor salonu erişimi': 'Gym access',
+    'Soyunma odası kullanımı': 'Locker room access',
+    'Temel ekipman erişimi': 'Basic equipment access',
+    'Tüm ekipman erişimi': 'All equipment access',
+    'Grup dersleri': 'Group classes',
+    'Grup dersleri (sınırsız)': 'Group classes (unlimited)',
+    'Kişisel antrenör': 'Personal trainer',
+    'Aylık 4 kişisel antrenör': '4 personal trainer sessions monthly',
+    'Misafir getirme hakkı': 'Guest pass privilege',
+    'İstediğim zaman iptal edebilir miyim?': 'Can I cancel anytime?',
+    'Plan değiştirebilir miyim?': 'Can I change my plan?',
+    'Yıllık planda indirim nasıl işliyor?': 'How does the yearly discount work?',
+    'Grup derslerine nasıl katılabilirim?': 'How can I join group classes?',
+    'Evet, planınızı istediğiniz zaman iptal edebilirsiniz. İptal işlemi sonraki fatura döneminden itibaren geçerli olur.': 'Yes, you can cancel your plan anytime. Cancellation takes effect from the next billing period.',
+    'Evet, mevcut planınızı istediğiniz zaman yükseltebilir veya düşürebilirsiniz. Fark tutarı orantılı olarak hesaplanır.': 'Yes, you can upgrade or downgrade your current plan anytime. The price difference is calculated proportionally.',
+    'Yıllık plan seçtiğinizde toplam ücret peşin olarak alınır ve aylık fiyata kıyasla %20 indirim uygulanır.': 'When you choose the yearly plan, the total fee is charged upfront and a 20% discount is applied compared to monthly pricing.',
+    'Klasik veya Elite planınız varsa Rezervasyon sayfasından ders seçip online rezervasyon yapabilirsiniz.': 'If you have a Classic or Elite plan, you can select a class and book online from the Booking page.',
+    'Pasif': 'Inactive',
+    'Sona Eriyor': 'Expiring Soon',
+    'Onaylı': 'Confirmed',
+    'Üye': 'Member',
+    'Üye Yap': 'Make Member',
+    'Admin Yap': 'Make Admin',
+    'Tüm alanları doldurun.': 'Please fill in all fields.',
+    '✅ Ders eklendi!': '✅ Class added!',
+    'Henüz ders eklenmedi.': 'No classes have been added yet.',
+    'Üyelikler yükleniyor...': 'Loading memberships...',
+    'Rezervasyonlar backend üzerinden yükleniyor...': 'Bookings are loading from backend...',
+    'Bu dersi silmek istediğinden emin misin?': 'Are you sure you want to delete this class?',
+    'Ders silindi.': 'Class deleted.',
+    'Planınızı iptal etmek istediğinizden emin misiniz?': 'Are you sure you want to cancel your plan?',
+    '✅ Plan başarıyla aktifleştirildi!': '✅ Plan activated successfully!',
+    '✅ Rezervasyon başarıyla oluşturuldu!': '✅ Booking created successfully!',
+    'Rezervasyon iptal edildi.': 'Booking canceled.',
+    'Şifre güncellenemedi.': 'Password could not be updated.',
+    'En az 6 karakter': 'At least 6 characters',
+    'Şifreni tekrar gir': 'Re-enter your password',
+    'Adın': 'Your first name',
+    'Soyadın': 'Your last name',
+    'Egzersiz ara...': 'Search exercises...',
+    'Eğitmen adı': 'Instructor name',
+    'Hazır mısın?': 'Are you ready?',
+    'Ücretsiz hesap oluştur, tüm özellikleri keşfet.': 'Create a free account and explore all features.',
+    'Üye Ol — Ücretsiz': 'Sign Up — Free',
+    'Modern Spor Yönetimi': 'Modern Gym Management',
+    'Üyelik takibinden ders rezervasyonuna, egzersiz planlarından admin paneline —\n        BYEM GYM ile spor merkezi yönetimi artık çok daha kolay.': 'From membership tracking to class booking, from exercise plans to admin panel —\n        managing your gym is now much easier with BYEM GYM.',
+    'Hemen Başla': 'Get Started',
+    'Keşfet': 'Explore',
+    'Aktif Üye': 'Active Members',
+    'Haftalık Ders': 'Weekly Classes',
+    'Uzman Eğitmen': 'Expert Trainers',
+    'Tüm İhtiyaçlar': 'All Your Needs',
+    'Tek Platformda': 'On One Platform',
+    'Üyeler ve yöneticiler için eksiksiz bir spor merkezi deneyimi.': 'A complete gym experience for members and administrators.',
+    'Kolay Kayıt': 'Easy Registration',
+    'Hızlı kayıt ve güvenli giriş ile saniyeler içinde sisteme dahil ol.': 'Join the system in seconds with quick registration and secure login.',
+    'Aylık, 3 aylık ve yıllık paketler arasından en uygun planı seç.': 'Choose the most suitable plan among monthly, 3-month, and yearly packages.',
+    'Yoga, CrossFit, Spinning — istediğin derse online olarak yer ayırt.': 'Yoga, CrossFit, Spinning — reserve your spot online for any class you want.',
+    '1300+ egzersizi keşfet, vücut bölgesine ve hedefe göre filtrele.': 'Discover 1300+ exercises and filter by muscle group and goal.',
+    'Profil Takibi': 'Profile Tracking',
+    'Üyelik sürenini, geçmiş rezervasyonlarını ve bilgilerini yönet.': 'Manage your membership duration, booking history, and personal details.',
+    'Dersleri düzenle, üyelikleri yönet, sistemi tam kontrol altında tut.': 'Manage classes, memberships, and keep the whole system under control.',
     'Kişisel Bilgiler': 'Personal Information',
     'Üyelik Durumu': 'Membership Status',
     'Güvenlik': 'Security',
@@ -126,7 +200,7 @@
     'Ara': 'Search',
     'Tüm Kaslar': 'All Muscles',
     'Tüm Seviyeler': 'All Levels',
-    'Başlangıç': 'Beginner',
+    'Başlangıç': 'Start',
     'Orta': 'Intermediate',
     'İleri': 'Advanced',
     'Pazartesi': 'Monday',
@@ -157,7 +231,9 @@
     { regex: /^(\d+)\s+kişi$/i, replacement: '$1 people' },
     { regex: /^(\d+)\s+gün$/i, replacement: '$1 days' },
     { regex: /^Rol\s+güncellendi:\s*(\w+)$/i, replacement: 'Role updated: $1' },
-    { regex: /^Yıllık:\s*(.+)$/i, replacement: 'Yearly: $1' }
+    { regex: /^Yıllık:\s*(.+)$/i, replacement: 'Yearly: $1' },
+    { regex: /^₺\s*\/\s*ay$/i, replacement: 'TRY / month' },
+    { regex: /^Üyelik\s+takibinden\s+ders\s+rezervasyonuna,\s+egzersiz\s+planlarından\s+admin\s+paneline\s+—\s+BYEM\s+GYM\s+ile\s+spor\s+merkezi\s+yönetimi\s+artık\s+çok\s+daha\s+kolay\.$/i, replacement: 'From membership tracking to class booking, from exercise plans to admin panel, managing your gym is now much easier with BYEM GYM.' }
   ];
 
   function getLang() {
@@ -261,6 +337,21 @@
     const $toggle = document.getElementById('languageToggleBtn');
     if ($label) $label.textContent = 'Current language: English';
     if ($toggle) $toggle.textContent = 'Switch to Turkish';
+
+    const difficultySelect = document.getElementById('filterDifficulty');
+    if (difficultySelect) {
+      const difficultyLabels = {
+        '': 'All Levels',
+        beginner: 'Beginner',
+        intermediate: 'Intermediate',
+        expert: 'Advanced'
+      };
+      Array.from(difficultySelect.options).forEach((opt) => {
+        if (Object.prototype.hasOwnProperty.call(difficultyLabels, opt.value)) {
+          opt.textContent = difficultyLabels[opt.value];
+        }
+      });
+    }
   }
 
   function observeDynamicContent() {
