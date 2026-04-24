@@ -287,7 +287,8 @@ byem-gym-mwd-fullstack-project/
 
 ## 📸 Screenshots
 
-> *(Add screenshots here)*
+<img width="945" height="470" alt="image" src="https://github.com/user-attachments/assets/960abceb-ae0b-4d24-acb0-363ffb4b549e" />
+
 
 ---
 
