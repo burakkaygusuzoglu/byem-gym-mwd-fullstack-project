@@ -65,6 +65,15 @@ $(document).ready(function () {
     const initial = (user?.full_name || user?.email || 'U').charAt(0).toUpperCase();
     const logoutText = (typeof t === 'function') ? t('Çıkış') : 'Çıkış';
 
+    if (user?.role === 'admin') {
+      if ($('.navbar-menu a[href="admin.html"]').length === 0) {
+        $('.navbar-menu').append('<li><a href="admin.html" class="navbar-link">Admin</a></li>');
+      }
+      if ($('.mobile-menu a[href="admin.html"]').length === 0) {
+        $('.mobile-menu').append('<a href="admin.html" class="navbar-link">Admin</a>');
+      }
+    }
+
     $('#navActions').html(`
       <div style="display:flex;align-items:center;gap:0.75rem;">
         <div style="width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.95rem;">${initial}</div>
