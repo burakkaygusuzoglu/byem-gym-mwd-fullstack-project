@@ -97,6 +97,8 @@ const ClassesAPI = {
 const BookingsAPI = {
   getMyBookings: () => apiFetch('/bookings'),
 
+  getAll: () => apiFetch('/bookings/all'),
+
   create: (class_id) => apiFetch('/bookings', {
     method: 'POST',
     body: JSON.stringify({ class_id })
@@ -108,6 +110,8 @@ const BookingsAPI = {
 /* ── Memberships API ──────────────────────────────────────── */
 const MembershipsAPI = {
   getMy: () => apiFetch('/memberships/me'),
+
+  getAll: () => apiFetch('/memberships/all'),
 
   create: (plan_name, billing) => apiFetch('/memberships', {
     method: 'POST',

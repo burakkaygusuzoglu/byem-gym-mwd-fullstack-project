@@ -3,6 +3,44 @@ const supabase   = require('../supabase');
 const authMiddle = require('../middleware/auth');
 const router     = express.Router();
 
+// GET /api/bookings/all — Tüm rezervasyonlar (admin)
+router.get('/all', authMiddle, async (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Sadece adminler tüm rezervasyonları görebilir.' });
+  }
+
+  const { data: bookings, error: bError } = await supabase
+    .from('bookings')
+    .select('*, classes(*)')
+    .order('booked_at', { ascending: false });
+
+  if (bError) return res.status(500).json({ error: bError.message });
+
+  const userIds = [...new Set((bookings || []).map(b => b.user_id).filter(Boolean))];
+  let profileMap = {};
+
+  if (userIds.length > 0) {
+    const { data: profiles, error: pError } = await supabase
+      .from('profiles')
+      .select('id, full_name, email')
+      .in('id', userIds);
+
+    if (pError) return res.status(500).json({ error: pError.message });
+
+    profileMap = (profiles || []).reduce((acc, p) => {
+      acc[p.id] = p;
+      return acc;
+    }, {});
+  }
+
+  const result = (bookings || []).map((b) => ({
+    ...b,
+    profile: profileMap[b.user_id] || null
+  }));
+
+  return res.json(result);
+});
+
 // GET /api/bookings — Kullanıcının rezervasyonları
 router.get('/', authMiddle, async (req, res) => {
   const { data, error } = await supabase
