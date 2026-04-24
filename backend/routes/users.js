@@ -1,7 +1,12 @@
 const express    = require('express');
+const { createClient } = require('@supabase/supabase-js');
 const supabase   = require('../supabase');
 const authMiddle = require('../middleware/auth');
 const router     = express.Router();
+
+const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+  : null;
 
 // GET /api/users — Tüm kullanıcılar (admin)
 router.get('/', authMiddle, async (req, res) => {
@@ -56,6 +61,28 @@ router.put('/:id/role', authMiddle, async (req, res) => {
   const { role } = req.body;
   if (!['admin', 'member'].includes(role)) {
     return res.status(400).json({ error: 'Geçersiz rol.' });
+  }
+
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY eksik.' });
+  }
+
+  const { data: authUserData, error: authUserError } = await supabaseAdmin.auth.admin.getUserById(req.params.id);
+  if (authUserError || !authUserData?.user) {
+    return res.status(500).json({ error: authUserError?.message || 'Auth kullanıcısı bulunamadı.' });
+  }
+
+  const mergedMetadata = {
+    ...(authUserData.user.user_metadata || {}),
+    role
+  };
+
+  const { error: authUpdateError } = await supabaseAdmin.auth.admin.updateUserById(req.params.id, {
+    user_metadata: mergedMetadata
+  });
+
+  if (authUpdateError) {
+    return res.status(500).json({ error: authUpdateError.message });
   }
 
   const { data, error } = await supabase
