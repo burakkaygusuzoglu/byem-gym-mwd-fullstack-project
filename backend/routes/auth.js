@@ -1,6 +1,5 @@
 const express  = require('express');
 const jwt      = require('jsonwebtoken');
-const bcrypt   = require('bcryptjs');
 const { createClient } = require('@supabase/supabase-js');
 const supabase = require('../supabase');
 const router   = express.Router();
@@ -49,9 +48,19 @@ router.post('/login', async (req, res) => {
 
   if (error) return res.status(401).json({ error: 'Geçersiz email veya şifre.' });
 
+  // Profiles tablosundan güncel rolü al (user_metadata ile senkronizasyon sorunundan kaçınmak için)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, full_name')
+    .eq('id', data.user.id)
+    .single();
+
+  const role     = profile?.role || data.user.user_metadata?.role || 'member';
+  const fullName = profile?.full_name || data.user.user_metadata?.full_name;
+
   // JWT üret
   const token = jwt.sign(
-    { id: data.user.id, email: data.user.email, role: data.user.user_metadata?.role || 'member' },
+    { id: data.user.id, email: data.user.email, role },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -62,8 +71,8 @@ router.post('/login', async (req, res) => {
     user: {
       id:        data.user.id,
       email:     data.user.email,
-      full_name: data.user.user_metadata?.full_name,
-      role:      data.user.user_metadata?.role || 'member'
+      full_name: fullName,
+      role
     }
   });
 });

@@ -93,14 +93,16 @@ async function loadStats() {
     $('#statClasses').text(classes.length || 0);
     $('#statActiveMemberships').text((memberships || []).filter(m => m.status === 'active').length);
     $('#statBookings').text((bookings || []).filter(b => b.status === 'confirmed').length);
-  } catch {}
+  } catch (err) {
+    console.error('loadStats hatası:', err.message);
+  }
 }
 
 async function loadClasses() {
+  $('#classesTableBody').empty();
   try {
     const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
     const data = await ClassesAPI.getAll();
-    $('#classesTableBody').empty();
 
     if (!data.length) {
       $('#classesTableBody').html('<tr><td colspan="6" style="text-align:center;color:var(--muted);">Henüz ders eklenmedi.</td></tr>');
@@ -120,13 +122,16 @@ async function loadClasses() {
         </tr>
       `);
     });
-  } catch {}
+  } catch (err) {
+    console.error('loadClasses hatası:', err.message);
+    $('#classesTableBody').html(`<tr><td colspan="6" style="text-align:center;color:var(--danger);">Dersler yüklenemedi: ${err.message}</td></tr>`);
+  }
 }
 
 async function loadUsers() {
+  $('#usersTableBody').empty();
   try {
     const data = await UsersAPI.getAll();
-    $('#usersTableBody').empty();
     $('#statUsers').text(data.length);
 
     data.forEach(u => {
@@ -141,13 +146,16 @@ async function loadUsers() {
         </tr>
       `);
     });
-  } catch {}
+  } catch (err) {
+    console.error('loadUsers hatası:', err.message);
+    $('#usersTableBody').html(`<tr><td colspan="5" style="text-align:center;color:var(--danger);">Kullanıcılar yüklenemedi: ${err.message}</td></tr>`);
+  }
 }
 
 async function loadMemberships() {
+  $('#membershipsTableBody').empty();
   try {
     const data = await MembershipsAPI.getAll();
-    $('#membershipsTableBody').empty();
 
     if (!data.length) {
       $('#membershipsTableBody').html('<tr><td colspan="5" style="text-align:center;color:var(--muted);">Kayıt bulunamadı.</td></tr>');
@@ -170,14 +178,17 @@ async function loadMemberships() {
         </tr>
       `);
     });
-  } catch {}
+  } catch (err) {
+    console.error('loadMemberships hatası:', err.message);
+    $('#membershipsTableBody').html(`<tr><td colspan="5" style="text-align:center;color:var(--danger);">Üyelikler yüklenemedi: ${err.message}</td></tr>`);
+  }
 }
 
 async function loadBookings() {
+  $('#bookingsTableBody').empty();
   try {
     const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
     const data = await BookingsAPI.getAll();
-    $('#bookingsTableBody').empty();
 
     if (!data.length) {
       $('#bookingsTableBody').html('<tr><td colspan="5" style="text-align:center;color:var(--muted);">Kayıt bulunamadı.</td></tr>');
@@ -204,7 +215,10 @@ async function loadBookings() {
         </tr>
       `);
     });
-  } catch {}
+  } catch (err) {
+    console.error('loadBookings hatası:', err.message);
+    $('#bookingsTableBody').html(`<tr><td colspan="5" style="text-align:center;color:var(--danger);">Rezervasyonlar yüklenemedi: ${err.message}</td></tr>`);
+  }
 }
 
 window.deleteClass = async function (id) {
