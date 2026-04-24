@@ -6,15 +6,18 @@ $(document).ready(async function () {
 
   if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
 
-  let isAdmin = false;
+  const cachedUser = (typeof Auth.getUser === 'function') ? Auth.getUser() : null;
+  let isAdmin = cachedUser?.role === 'admin';
   try {
     const me = await AuthAPI.me();
-    isAdmin = me?.role === 'admin';
-    if (me && typeof Auth.setUser === 'function') {
-      Auth.setUser(me);
+    if (me) {
+      isAdmin = isAdmin || me.role === 'admin';
+      if (typeof Auth.setUser === 'function') {
+        Auth.setUser({ ...(cachedUser || {}), ...me });
+      }
     }
   } catch {
-    isAdmin = false;
+    // API dogrulamasi gecici olarak basarisiz olsa bile local role admin ise erisimi kesme.
   }
 
   if (!isAdmin) {
