@@ -68,9 +68,13 @@ window.openPlanModal = function (btn) {
   };
   $('#modalPlanName').text(selectedPlan.name);
   $('#modalPrice').text(selectedPlan.price);
-  $('#modalBillingType').text(isAnnual ? 'Yıllık' : 'Aylık');
+  const isEnglish = (typeof getLang === 'function' && getLang() === 'en');
+  $('#modalBillingType').text(isAnnual ? (isEnglish ? 'Yearly' : 'Yıllık') : (isEnglish ? 'Monthly' : 'Aylık'));
   $('#modalAlert').hide();
   $('#planModal, #modalOverlay').css('display', 'block');
+  if (typeof applyI18n === 'function') {
+    applyI18n(document.getElementById('planModal'));
+  }
 };
 
 function closeModal() { $('#planModal, #modalOverlay').css('display', 'none'); }
