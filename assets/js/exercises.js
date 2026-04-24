@@ -30,19 +30,19 @@ let currentParams = {};
 $(document).ready(async function () {
 
   /* ── Auth ─────────────────────────────────────────────────── */
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) { window.location.href = 'login.html'; return; }
-  const user = session.user;
+  if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+  const user = Auth.getUser();
+  if (!user) { Auth.logout(); return; }
 
   /* ── Navbar ───────────────────────────────────────────────── */
-  const initial = (user.user_metadata?.full_name || user.email).charAt(0).toUpperCase();
+  const initial = (user.full_name || user.email || 'U').charAt(0).toUpperCase();
   $('#navActions').html(`
     <div style="display:flex;align-items:center;gap:0.75rem;">
       <div style="width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">${initial}</div>
       <button class="btn btn-ghost btn-sm" id="logoutBtn">Çıkış</button>
     </div>
   `);
-  $('#logoutBtn').on('click', async () => { await supabaseClient.auth.signOut(); window.location.href = '../index.html'; });
+  $('#logoutBtn').on('click', () => { Auth.logout(); });
 
   /* ── Initial load ─────────────────────────────────────────── */
   await fetchExercises({}, true);

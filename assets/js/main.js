@@ -1,26 +1,28 @@
 /* ============================================================
    BYEM GYM — main.js
-   Global: navbar, auth state check, shared utilities
+   Global: navbar, auth guard, shared utilities
    ============================================================ */
 
 $(document).ready(function () {
 
+  if (typeof applyI18n === 'function') {
+    applyI18n();
+  }
+
   /* ── Navbar: hamburger toggle ────────────────────────────── */
-  const $hamburger   = $('.hamburger');
-  const $mobileMenu  = $('.mobile-menu');
+  const $hamburger  = $('.hamburger');
+  const $mobileMenu = $('.mobile-menu');
 
   $hamburger.on('click', function () {
     $(this).toggleClass('open');
     $mobileMenu.toggleClass('open');
   });
 
-  // Close mobile menu on link click
   $mobileMenu.find('a').on('click', function () {
     $hamburger.removeClass('open');
     $mobileMenu.removeClass('open');
   });
 
-  // Close on outside click
   $(document).on('click', function (e) {
     if (!$(e.target).closest('.hamburger, .mobile-menu').length) {
       $hamburger.removeClass('open');
@@ -32,105 +34,75 @@ $(document).ready(function () {
   const currentPage = window.location.pathname.split('/').pop();
   $('.navbar-link').each(function () {
     const href = $(this).attr('href');
-    if (href && href.includes(currentPage)) {
-      $(this).addClass('active');
-    }
+    if (href && href.includes(currentPage)) $(this).addClass('active');
   });
 
   /* ── Scroll: navbar shadow ───────────────────────────────── */
   $(window).on('scroll', function () {
-    if ($(this).scrollTop() > 10) {
-      $('.navbar').css('box-shadow', '0 4px 24px rgba(0,0,0,0.5)');
-    } else {
-      $('.navbar').css('box-shadow', 'none');
-    }
+    $('.navbar').css('box-shadow', $(this).scrollTop() > 10 ? '0 4px 24px rgba(0,0,0,0.5)' : 'none');
   });
 
-  /* ── Auth state guard ────────────────────────────────────── */
-  // Pages that require login
-  const protectedPages = [
-    'dashboard.html', 'profile.html',
-    'booking.html', 'membership.html',
-    'exercises.html', 'admin.html'
-  ];
+  /* ── Auth guard ──────────────────────────────────────────── */
+  const hasAuth = typeof Auth !== 'undefined';
+  const protectedPages = ['dashboard.html', 'profile.html', 'booking.html', 'membership.html', 'exercises.html', 'admin.html'];
+  const authPages      = ['login.html', 'register.html'];
+  const isProtected    = protectedPages.some(p => currentPage.includes(p));
+  const isAuthPage     = authPages.some(p => currentPage.includes(p));
 
-  // Pages that should redirect if already logged in
-  const authPages = ['login.html', 'register.html'];
+  if (hasAuth && isProtected && !Auth.isLoggedIn()) {
+    window.location.href = '../pages/login.html';
+    return;
+  }
 
-  const isProtected = protectedPages.some(p => currentPage.includes(p));
-  const isAuthPage  = authPages.some(p => currentPage.includes(p));
-
-  // We check Supabase session (supabase-config.js must load first)
-  if (typeof supabaseClient !== 'undefined') {
-    supabaseClient.auth.getSession().then(({ data }) => {
-      const session = data?.session;
-
-      if (isProtected && !session) {
-        // Not logged in, redirect to login
-        window.location.href = '../pages/login.html';
-      }
-
-      if (isAuthPage && session) {
-        // Already logged in, redirect to dashboard
-        window.location.href = 'dashboard.html';
-      }
-
-      // Update navbar for logged-in state
-      if (session) {
-        updateNavbarLoggedIn(session.user);
-      }
-    });
+  if (hasAuth && isAuthPage && Auth.isLoggedIn()) {
+    window.location.href = 'dashboard.html';
+    return;
   }
 
   /* ── Navbar: logged-in state ─────────────────────────────── */
-  function updateNavbarLoggedIn(user) {
-    const email = user?.email || '';
-    const initial = email.charAt(0).toUpperCase();
+  if (hasAuth && Auth.isLoggedIn()) {
+    const user    = Auth.getUser();
+    const initial = (user?.full_name || user?.email || 'U').charAt(0).toUpperCase();
+    const logoutText = (typeof t === 'function') ? t('Çıkış') : 'Çıkış';
 
-    // Replace Login/Register buttons with user avatar + logout
-    const $actions = $('.navbar-actions');
-    $actions.html(`
-      <div class="nav-user">
-        <div class="nav-avatar" title="${email}">${initial}</div>
-        <button class="btn btn-ghost btn-sm" id="logoutBtn">Çıkış</button>
+    $('#navActions').html(`
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <div style="width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.95rem;">${initial}</div>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn">${logoutText}</button>
       </div>
     `);
 
-    $('#logoutBtn').on('click', async function () {
-      await supabaseClient.auth.signOut();
-      window.location.href = '../index.html';
+    $('#logoutBtn').on('click', function () {
+      Auth.logout();
     });
   }
 
-  /* ── Alert helper ────────────────────────────────────────── */
-  window.showAlert = function (selector, message, type = 'info') {
-    const $alert = $(selector);
-    $alert
-      .removeClass('alert-success alert-error alert-info')
-      .addClass(`alert-${type}`)
-      .text(message)
-      .slideDown(200);
-
-    if (type !== 'error') {
-      setTimeout(() => $alert.slideUp(300), 4000);
-    }
-  };
-
-  /* ── Loading button state ─────────────────────────────────── */
-  window.setLoading = function ($btn, loading, text = '') {
-    if (loading) {
-      $btn.data('original-text', $btn.html());
-      $btn.html('<span class="spinner"></span>').prop('disabled', true);
-    } else {
-      $btn.html($btn.data('original-text') || text).prop('disabled', false);
-    }
-  };
-
-  /* ── Format date helper ──────────────────────────────────── */
-  window.formatDate = function (dateStr) {
-    return new Date(dateStr).toLocaleDateString('tr-TR', {
-      day: '2-digit', month: 'long', year: 'numeric'
-    });
-  };
-
 });
+
+/* ── Alert helper ─────────────────────────────────────────── */
+window.showAlert = function (selector, message, type = 'info') {
+  const $alert = $(selector);
+  $alert.removeClass('alert-success alert-error alert-info')
+    .addClass(`alert-${type}`)
+    .text(message)
+    .slideDown(200);
+
+  if (type !== 'error') setTimeout(() => $alert.slideUp(300), 4000);
+};
+
+/* ── Loading button ───────────────────────────────────────── */
+window.setLoading = function ($btn, loading) {
+  if (loading) {
+    $btn.data('original-text', $btn.html());
+    $btn.html('<span class="spinner"></span>').prop('disabled', true);
+  } else {
+    $btn.html($btn.data('original-text')).prop('disabled', false);
+  }
+};
+
+/* ── Format date ──────────────────────────────────────────── */
+window.formatDate = function (dateStr) {
+  if (!dateStr) return '—';
+  const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
+  return new Date(dateStr).toLocaleDateString(locale, { day: '2-digit', month: 'long', year: 'numeric' });
+};
