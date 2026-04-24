@@ -15,7 +15,8 @@ const MUSCLE_LABELS = {
   waist:'Bel', cardio:'Kardiyo', abdominals:'Karın', neck:'Boyun'
 };
 
-const DIFFICULTY_LABELS = { beginner:'Başlangıç', intermediate:'Orta', expert:'İleri' };
+const DIFFICULTY_LABELS_TR = { beginner:'Başlangıç', intermediate:'Orta', expert:'İleri' };
+const DIFFICULTY_LABELS_EN = { beginner:'Beginner', intermediate:'Intermediate', expert:'Advanced' };
 
 const MUSCLE_ICONS = {
   chest:'fa-heart-pulse', back:'fa-arrows-up-down', shoulders:'fa-child-reaching',
@@ -33,16 +34,6 @@ $(document).ready(async function () {
   if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
   const user = Auth.getUser();
   if (!user) { Auth.logout(); return; }
-
-  /* ── Navbar ───────────────────────────────────────────────── */
-  const initial = (user.full_name || user.email || 'U').charAt(0).toUpperCase();
-  $('#navActions').html(`
-    <div style="display:flex;align-items:center;gap:0.75rem;">
-      <div style="width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">${initial}</div>
-      <button class="btn btn-ghost btn-sm" id="logoutBtn">Çıkış</button>
-    </div>
-  `);
-  $('#logoutBtn').on('click', () => { Auth.logout(); });
 
   /* ── Initial load ─────────────────────────────────────────── */
   await fetchExercises({}, true);
@@ -121,7 +112,8 @@ async function fetchExercises (params, reset) {
 
 function renderExerciseCard (ex) {
   const muscleLabel = MUSCLE_LABELS[ex.muscle] || ex.muscle;
-  const diffLabel   = DIFFICULTY_LABELS[ex.difficulty] || ex.difficulty;
+  const diffMap = (typeof getLang === 'function' && getLang() === 'en') ? DIFFICULTY_LABELS_EN : DIFFICULTY_LABELS_TR;
+  const diffLabel   = diffMap[ex.difficulty] || ex.difficulty;
   const icon        = MUSCLE_ICONS[ex.muscle] || 'fa-dumbbell';
   const instructions = ex.instructions || 'Detay bilgisi mevcut değil.';
 
@@ -147,7 +139,8 @@ function renderExerciseCard (ex) {
 
 window.openExerciseModal = function (ex) {
   const muscleLabel = MUSCLE_LABELS[ex.muscle] || ex.muscle;
-  const diffLabel   = DIFFICULTY_LABELS[ex.difficulty] || ex.difficulty;
+  const diffMap = (typeof getLang === 'function' && getLang() === 'en') ? DIFFICULTY_LABELS_EN : DIFFICULTY_LABELS_TR;
+  const diffLabel   = diffMap[ex.difficulty] || ex.difficulty;
 
   $('#modalName').text(ex.name);
   $('#modalTags').html(`

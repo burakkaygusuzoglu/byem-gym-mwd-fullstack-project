@@ -3,6 +3,44 @@ const supabase   = require('../supabase');
 const authMiddle = require('../middleware/auth');
 const router     = express.Router();
 
+// GET /api/memberships/all — Tüm üyelikler (admin)
+router.get('/all', authMiddle, async (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Sadece adminler tüm üyelikleri görebilir.' });
+  }
+
+  const { data: memberships, error: mError } = await supabase
+    .from('memberships')
+    .select('*')
+    .order('start_date', { ascending: false });
+
+  if (mError) return res.status(500).json({ error: mError.message });
+
+  const userIds = [...new Set((memberships || []).map(m => m.user_id).filter(Boolean))];
+  let profileMap = {};
+
+  if (userIds.length > 0) {
+    const { data: profiles, error: pError } = await supabase
+      .from('profiles')
+      .select('id, full_name, email')
+      .in('id', userIds);
+
+    if (pError) return res.status(500).json({ error: pError.message });
+
+    profileMap = (profiles || []).reduce((acc, p) => {
+      acc[p.id] = p;
+      return acc;
+    }, {});
+  }
+
+  const result = (memberships || []).map((m) => ({
+    ...m,
+    profile: profileMap[m.user_id] || null
+  }));
+
+  return res.json(result);
+});
+
 // GET /api/memberships/me — Aktif üyelik
 router.get('/me', authMiddle, async (req, res) => {
   const { data, error } = await supabase

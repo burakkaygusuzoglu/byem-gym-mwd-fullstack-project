@@ -50,16 +50,22 @@ $(document).ready(async function () {
     const name       = $('#className').val().trim();
     const instructor = $('#classInstructor').val().trim();
     const capacity   = parseInt($('#classCapacity').val());
-    const schedule   = $('#classSchedule').val();
+    const scheduleRaw = $('#classSchedule').val();
 
-    if (!name || !instructor || !capacity || !schedule) {
+    if (!name || !instructor || Number.isNaN(capacity) || capacity < 1 || !scheduleRaw) {
       showAlert('#adminAlert', 'Tüm alanları doldurun.', 'error');
+      return;
+    }
+
+    const scheduleDate = new Date(scheduleRaw);
+    if (Number.isNaN(scheduleDate.getTime())) {
+      showAlert('#adminAlert', 'Geçerli bir tarih/saat seçin.', 'error');
       return;
     }
 
     setLoading($btn, true);
     try {
-      await ClassesAPI.create({ name, instructor, capacity, schedule: new Date(schedule).toISOString() });
+      await ClassesAPI.create({ name, instructor, capacity, schedule: scheduleDate.toISOString() });
       showAlert('#adminAlert', '✅ Ders eklendi!', 'success');
       $('#className, #classInstructor, #classCapacity, #classSchedule').val('');
       await loadClasses();
@@ -74,9 +80,16 @@ $(document).ready(async function () {
 
 async function loadStats() {
   try {
-    const [users, classes] = await Promise.all([UsersAPI.getAll(), ClassesAPI.getAll()]);
+    const [users, classes, memberships, bookings] = await Promise.all([
+      UsersAPI.getAll(),
+      ClassesAPI.getAll(),
+      MembershipsAPI.getAll(),
+      BookingsAPI.getAll()
+    ]);
     $('#statUsers').text(users.length || 0);
     $('#statClasses').text(classes.length || 0);
+    $('#statActiveMemberships').text((memberships || []).filter(m => m.status === 'active').length);
+    $('#statBookings').text((bookings || []).filter(b => b.status === 'confirmed').length);
   } catch {}
 }
 
@@ -110,7 +123,7 @@ async function loadClasses() {
 async function loadUsers() {
   try {
     const data = await UsersAPI.getAll();
-    $('#usersTableBody, #statUsers').empty && $('#usersTableBody').empty();
+    $('#usersTableBody').empty();
     $('#statUsers').text(data.length);
 
     data.forEach(u => {
@@ -130,17 +143,65 @@ async function loadUsers() {
 
 async function loadMemberships() {
   try {
-    const { data } = await fetch('http://localhost:3000/api/memberships/all', {
-      headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
-    }).then(r => r.json()).catch(() => ({ data: [] }));
+    const data = await MembershipsAPI.getAll();
+    $('#membershipsTableBody').empty();
 
-    // Supabase'den direkt çek
-    $('#membershipsTableBody').html('<tr><td colspan="5" style="text-align:center;color:var(--muted);">Üyelikler yükleniyor...</td></tr>');
+    if (!data.length) {
+      $('#membershipsTableBody').html('<tr><td colspan="5" style="text-align:center;color:var(--muted);">Kayıt bulunamadı.</td></tr>');
+      return;
+    }
+
+    data.forEach((m) => {
+      const userName = m.profile?.full_name || m.profile?.email || '—';
+      const statusBadge = m.status === 'active'
+        ? '<span class="badge badge-success">Aktif</span>'
+        : '<span class="badge badge-danger">Pasif</span>';
+
+      $('#membershipsTableBody').append(`
+        <tr>
+          <td>${userName}</td>
+          <td>${m.plan_name || '—'}</td>
+          <td>${formatDate(m.start_date)}</td>
+          <td>${formatDate(m.end_date)}</td>
+          <td>${statusBadge}</td>
+        </tr>
+      `);
+    });
   } catch {}
 }
 
 async function loadBookings() {
-  $('#bookingsTableBody').html('<tr><td colspan="5" style="text-align:center;color:var(--muted);">Rezervasyonlar backend üzerinden yükleniyor...</td></tr>');
+  try {
+    const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
+    const data = await BookingsAPI.getAll();
+    $('#bookingsTableBody').empty();
+
+    if (!data.length) {
+      $('#bookingsTableBody').html('<tr><td colspan="5" style="text-align:center;color:var(--muted);">Kayıt bulunamadı.</td></tr>');
+      return;
+    }
+
+    data.forEach((b) => {
+      const userName = b.profile?.full_name || b.profile?.email || '—';
+      const className = b.classes?.name || '—';
+      const dateStr = b.classes?.schedule
+        ? new Date(b.classes.schedule).toLocaleString(locale, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : '—';
+      const statusBadge = b.status === 'confirmed'
+        ? '<span class="badge badge-success">Onaylı</span>'
+        : '<span class="badge badge-danger">İptal</span>';
+
+      $('#bookingsTableBody').append(`
+        <tr>
+          <td>${userName}</td>
+          <td>${className}</td>
+          <td>${dateStr}</td>
+          <td>${statusBadge}</td>
+          <td>—</td>
+        </tr>
+      `);
+    });
+  } catch {}
 }
 
 window.deleteClass = async function (id) {
