@@ -1,13 +1,7 @@
 /* ============================================================
    BYEM GYM — exercises.js
-   API Ninjas Exercise API entegrasyonu
-   
-   ⚠️  API KEY:
-   EXERCISES_API_KEY değişkenine kendi API Ninjas key'ini yaz.
-   https://api-ninjas.com/api/exercises
+  Egzersiz arama (backend proxy üzerinden)
    ============================================================ */
-
-const EXERCISES_API_KEY = 'BCIIqo8AJEdHBJc3ddDiTig3t8W7MwOT97hulZj8'; // ← Buraya key'ini yaz
 
 const MUSCLE_LABELS = {
   chest:'Göğüs', back:'Sırt', shoulders:'Omuzlar',
@@ -78,14 +72,9 @@ async function fetchExercises (params, reset) {
 
   // Build query string
   const query = new URLSearchParams({ limit: LIMIT, offset, ...params }).toString();
-  const url   = `https://api.api-ninjas.com/v1/exercises?${query}`;
 
   try {
-    const response = await $.ajax({
-      url,
-      headers: { 'X-Api-Key': EXERCISES_API_KEY },
-      method: 'GET'
-    });
+    const response = await apiFetch(`/exercises?${query}`);
 
     if (reset) $('#exercisesGrid').empty();
 

@@ -8,6 +8,7 @@ const bookingsRoutes    = require('./routes/bookings');
 const membershipsRoutes = require('./routes/memberships');
 const usersRoutes       = require('./routes/users');
 const adminRoutes       = require('./routes/admin');
+const exercisesRoutes   = require('./routes/exercises');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use('/api/bookings',    bookingsRoutes);
 app.use('/api/memberships', membershipsRoutes);
 app.use('/api/users',       usersRoutes);
 app.use('/api/admin',       adminRoutes);
+app.use('/api/exercises',   exercisesRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'BYEM GYM API is running!', version: '1.0.0' });

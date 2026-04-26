@@ -133,7 +133,7 @@ window.openBookingModal = function (cls) {
   $('#modalClassName').text(cls.name);
   $('#modalInstructor').text(cls.instructor);
   $('#modalSchedule').text(dt);
-  $('#modalCapacity').text(cls.capacity + ' kişi');
+  $('#modalCapacity').text(cls.capacity + (getLang() === 'en' ? ' people' : ' kişi'));
   $('#modalAlert').hide();
   $('#bookingModal, #modalOverlay').css('display', 'block');
 };

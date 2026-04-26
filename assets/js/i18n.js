@@ -136,6 +136,7 @@
     '✅ Plan başarıyla aktifleştirildi!': '✅ Plan activated successfully!',
     '✅ Rezervasyon başarıyla oluşturuldu!': '✅ Booking created successfully!',
     'Rezervasyon iptal edildi.': 'Booking canceled.',
+    'Rezervasyonu iptal etmek istediğinden emin misin?': 'Are you sure you want to cancel this booking?',
     'Şifre güncellenemedi.': 'Password could not be updated.',
     'En az 6 karakter': 'At least 6 characters',
     'Şifreni tekrar gir': 'Re-enter your password',
