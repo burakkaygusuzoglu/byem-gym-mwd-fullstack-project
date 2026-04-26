@@ -1,17 +1,26 @@
-const express    = require('express');
-const supabase   = require('../supabase');
-const authMiddle = require('../middleware/auth');
-const router     = express.Router();
+const express      = require('express');
+const supabase     = require('../supabase');
+const authMiddle   = require('../middleware/auth');
+const requireAdmin = require('../middleware/requireAdmin');
+const router       = express.Router();
 
-// GET /api/classes — Tüm dersler (public)
+// GET /api/classes — Tüm dersler + onaylı rezervasyon sayısı (public)
 router.get('/', async (req, res) => {
-  const { data, error } = await supabase
-    .from('classes')
-    .select('*')
-    .order('schedule', { ascending: true });
+  const [classesRes, bookingsRes] = await Promise.all([
+    supabase.from('classes').select('*').order('schedule', { ascending: true }),
+    supabase.from('bookings').select('class_id').eq('status', 'confirmed')
+  ]);
 
-  if (error) return res.status(500).json({ error: error.message });
-  return res.json(data);
+  if (classesRes.error) return res.status(500).json({ error: classesRes.error.message });
+
+  const countMap = {};
+  (bookingsRes.data || []).forEach(b => {
+    countMap[b.class_id] = (countMap[b.class_id] || 0) + 1;
+  });
+
+  return res.json(
+    (classesRes.data || []).map(c => ({ ...c, booked_count: countMap[c.id] || 0 }))
+  );
 });
 
 // GET /api/classes/:id — Tek ders
@@ -27,11 +36,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/classes — Yeni ders ekle (admin)
-router.post('/', authMiddle, async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Sadece adminler ders ekleyebilir.' });
-  }
-
+router.post('/', authMiddle, requireAdmin, async (req, res) => {
   const { name, instructor, schedule, capacity } = req.body;
 
   if (!name || !instructor || !schedule || !capacity) {
@@ -49,11 +54,7 @@ router.post('/', authMiddle, async (req, res) => {
 });
 
 // PUT /api/classes/:id — Ders güncelle (admin)
-router.put('/:id', authMiddle, async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Sadece adminler ders güncelleyebilir.' });
-  }
-
+router.put('/:id', authMiddle, requireAdmin, async (req, res) => {
   const { name, instructor, schedule, capacity } = req.body;
 
   const { data, error } = await supabase
@@ -68,11 +69,7 @@ router.put('/:id', authMiddle, async (req, res) => {
 });
 
 // DELETE /api/classes/:id — Ders sil (admin)
-router.delete('/:id', authMiddle, async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Sadece adminler ders silebilir.' });
-  }
-
+router.delete('/:id', authMiddle, requireAdmin, async (req, res) => {
   await supabase.from('bookings').delete().eq('class_id', req.params.id);
   const { error } = await supabase.from('classes').delete().eq('id', req.params.id);
 

@@ -33,22 +33,14 @@ async function apiFetch(endpoint, options = {}) {
     ...options.headers
   };
 
-  try {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      ...options,
-      headers
-    });
+  const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+  const data = await response.json();
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Bir hata oluştu.');
-    }
-
-    return data;
-  } catch (err) {
-    throw err;
+  if (!response.ok) {
+    throw new Error(data.error || 'Bir hata oluştu.');
   }
+
+  return data;
 }
 
 /* ── Auth API ─────────────────────────────────────────────── */
@@ -104,7 +96,8 @@ const BookingsAPI = {
     body: JSON.stringify({ class_id })
   }),
 
-  cancel: (id) => apiFetch(`/bookings/${id}`, { method: 'DELETE' })
+  cancel:      (id) => apiFetch(`/bookings/${id}`,       { method: 'DELETE' }),
+  cancelAdmin: (id) => apiFetch(`/bookings/${id}/admin`, { method: 'DELETE' })
 };
 
 /* ── Memberships API ──────────────────────────────────────── */
@@ -119,6 +112,11 @@ const MembershipsAPI = {
   }),
 
   cancel: () => apiFetch('/memberships/me', { method: 'DELETE' })
+};
+
+/* ── Admin API ────────────────────────────────────────────── */
+const AdminAPI = {
+  stats: () => apiFetch('/admin/stats')
 };
 
 /* ── Users API ────────────────────────────────────────────── */

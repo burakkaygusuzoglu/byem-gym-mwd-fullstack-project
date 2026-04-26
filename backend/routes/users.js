@@ -1,18 +1,16 @@
-const express    = require('express');
+const express      = require('express');
 const { createClient } = require('@supabase/supabase-js');
-const supabase   = require('../supabase');
-const authMiddle = require('../middleware/auth');
-const router     = express.Router();
+const supabase     = require('../supabase');
+const authMiddle   = require('../middleware/auth');
+const requireAdmin = require('../middleware/requireAdmin');
+const router       = express.Router();
 
 const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
   ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
   : null;
 
 // GET /api/users — Tüm kullanıcılar (admin)
-router.get('/', authMiddle, async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Sadece adminler kullanıcıları görebilir.' });
-  }
+router.get('/', authMiddle, requireAdmin, async (req, res) => {
 
   const { data, error } = await supabase
     .from('profiles')
@@ -53,10 +51,7 @@ router.put('/me', authMiddle, async (req, res) => {
 });
 
 // PUT /api/users/:id/role — Rol değiştir (admin)
-router.put('/:id/role', authMiddle, async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Sadece adminler rol değiştirebilir.' });
-  }
+router.put('/:id/role', authMiddle, requireAdmin, async (req, res) => {
 
   const { role } = req.body;
   if (!['admin', 'member'].includes(role)) {

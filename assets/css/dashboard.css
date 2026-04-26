@@ -44,6 +44,7 @@
   font-family: var(--font-display);
   font-size: 1.8rem; color: var(--text);
   line-height: 1; display: block;
+  font-variant-numeric: tabular-nums;
 }
 .stat-label {
   font-size: 0.8rem; color: var(--muted);
