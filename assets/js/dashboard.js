@@ -18,7 +18,7 @@ $(document).ready(async function () {
   $('#userName').text(fullName);
   $('#profileEmail').text(user?.email || '—');
   $('#profileCreated').text(formatDate(user?.created_at));
-  $('#profileRole').text(user?.role === 'admin' ? 'Admin' : 'Üye');
+  $('#profileRole').text(user?.role === 'admin' ? 'Admin' : t('Üye'));
 
   /* ── Membership ───────────────────────────────────────────── */
   try {
@@ -38,11 +38,11 @@ $(document).ready(async function () {
     $('#daysLeft').text(daysLeft);
 
     if (daysLeft < 7) {
-      $('#membershipStatus').removeClass('badge-success').addClass('badge-danger').text('Sona Eriyor');
+      $('#membershipStatus').removeClass('badge-success').addClass('badge-danger').text(t('Sona Eriyor'));
     }
   } catch {
-    $('#planName').text('Üyelik Yok');
-    $('#membershipStatus').removeClass('badge-success').addClass('badge-danger').text('Pasif');
+    $('#planName').text(t('Üyelik Yok'));
+    $('#membershipStatus').removeClass('badge-success').addClass('badge-danger').text(t('Pasif'));
     $('#daysLeft').text('0');
   }
 
@@ -78,7 +78,7 @@ $(document).ready(async function () {
     const created = new Date(profile.created_at);
     const months  = Math.max(1, Math.round((now - created) / (1000 * 60 * 60 * 24 * 30)));
     $('#memberSince').text(months);
-    $('#profileRole').text(profile.role === 'admin' ? 'Admin' : 'Üye');
+    $('#profileRole').text(profile.role === 'admin' ? 'Admin' : t('Üye'));
   } catch {}
 
 });

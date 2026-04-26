@@ -116,7 +116,7 @@ async function loadProfile(user) {
 
   try {
     const profile = await UsersAPI.getMe();
-    $('#sidebarRole').text(profile.role === 'admin' ? 'Admin' : 'Üye');
+    $('#sidebarRole').text(profile.role === 'admin' ? 'Admin' : t('Üye'));
 
     const created = new Date(profile.created_at);
     const now     = new Date();
@@ -133,7 +133,7 @@ async function loadProfile(user) {
     $('#mStatus').html('<span class="badge badge-success">Aktif</span>');
     $('#mStart').text(formatDate(m.start_date));
     $('#mEnd').text(formatDate(m.end_date));
-    $('#mDaysLeft').text(daysLeft + ' gün');
+    $('#mDaysLeft').text(daysLeft + (getLang() === 'en' ? ' days' : ' gün'));
     $('#statDaysLeft').text(daysLeft);
   } catch {
     $('#mStatus').html('<span class="badge badge-danger">Pasif</span>');
