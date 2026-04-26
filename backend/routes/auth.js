@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', require('../middleware/auth'), async (req, res) => {
   const { data, error } = await supabase
     .from('profiles')
-    .select('*')
+    .select('id, email, full_name, role, created_at')
     .eq('id', req.user.id)
     .single();
 

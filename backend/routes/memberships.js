@@ -1,13 +1,11 @@
-const express    = require('express');
-const supabase   = require('../supabase');
-const authMiddle = require('../middleware/auth');
-const router     = express.Router();
+const express      = require('express');
+const supabase     = require('../supabase');
+const authMiddle   = require('../middleware/auth');
+const requireAdmin = require('../middleware/requireAdmin');
+const router       = express.Router();
 
 // GET /api/memberships/all — Tüm üyelikler (admin)
-router.get('/all', authMiddle, async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Sadece adminler tüm üyelikleri görebilir.' });
-  }
+router.get('/all', authMiddle, requireAdmin, async (req, res) => {
 
   const { data: memberships, error: mError } = await supabase
     .from('memberships')

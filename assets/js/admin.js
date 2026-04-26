@@ -1,23 +1,36 @@
 /* ============================================================
-   BYEM GYM — admin.js — Backend API ile
+   BYEM GYM — admin.js
    ============================================================ */
+
+const LOCALE = typeof getLocale === 'function' ? getLocale() : 'tr-TR';
+
+async function renderTable(tbodyId, fetchFn, { colspan, emptyMsg, errorMsg, rowBuilder }) {
+  const $tbody = $(`#${tbodyId}`).empty();
+  try {
+    const data = await fetchFn();
+    if (!data.length) {
+      $tbody.html(`<tr><td colspan="${colspan}" style="text-align:center;color:var(--muted);">${emptyMsg}</td></tr>`);
+      return;
+    }
+    data.forEach(item => $tbody.append(rowBuilder(item)));
+  } catch (err) {
+    console.error(`${tbodyId}:`, err.message);
+    $tbody.html(`<tr><td colspan="${colspan}" style="text-align:center;color:var(--danger);">${errorMsg}</td></tr>`);
+  }
+}
 
 $(document).ready(async function () {
 
   if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
 
-  const cachedUser = (typeof Auth.getUser === 'function') ? Auth.getUser() : null;
-  let isAdmin = cachedUser?.role === 'admin';
+  let isAdmin = false;
   try {
     const me = await AuthAPI.me();
-    if (me) {
-      isAdmin = isAdmin || me.role === 'admin';
-      if (typeof Auth.setUser === 'function') {
-        Auth.setUser({ ...(cachedUser || {}), ...me });
-      }
-    }
+    isAdmin = me?.role === 'admin';
+    Auth.setUser(me);
   } catch {
-    // API dogrulamasi gecici olarak basarisiz olsa bile local role admin ise erisimi kesme.
+    window.location.href = 'login.html';
+    return;
   }
 
   if (!isAdmin) {
@@ -32,13 +45,8 @@ $(document).ready(async function () {
     return;
   }
 
-  await loadStats();
-  await loadClasses();
-  await loadUsers();
-  await loadMemberships();
-  await loadBookings();
+  await Promise.all([loadStats(), loadClasses(), loadUsers(), loadMemberships(), loadBookings()]);
 
-  /* ── Tabs ─────────────────────────────────────────────────── */
   $('.admin-tab').on('click', function () {
     const tab = $(this).data('tab');
     $('.admin-tab').removeClass('active');
@@ -47,12 +55,11 @@ $(document).ready(async function () {
     $(`#tab-${tab}`).removeClass('hidden');
   });
 
-  /* ── Add class ────────────────────────────────────────────── */
   $('#addClassBtn').on('click', async function () {
-    const $btn = $(this);
-    const name       = $('#className').val().trim();
-    const instructor = $('#classInstructor').val().trim();
-    const capacity   = parseInt($('#classCapacity').val());
+    const $btn        = $(this);
+    const name        = $('#className').val().trim();
+    const instructor  = $('#classInstructor').val().trim();
+    const capacity    = parseInt($('#classCapacity').val());
     const scheduleRaw = $('#classSchedule').val();
 
     if (!name || !instructor || Number.isNaN(capacity) || capacity < 1 || !scheduleRaw) {
@@ -69,10 +76,9 @@ $(document).ready(async function () {
     setLoading($btn, true);
     try {
       await ClassesAPI.create({ name, instructor, capacity, schedule: scheduleDate.toISOString() });
-      showAlert('#adminAlert', '✅ Ders eklendi!', 'success');
+      showAlert('#adminAlert', 'Ders eklendi!', 'success');
       $('#className, #classInstructor, #classCapacity, #classSchedule').val('');
-      await loadClasses();
-      await loadStats();
+      await Promise.all([loadClasses(), loadStats()]);
     } catch (err) {
       showAlert('#adminAlert', err.message, 'error');
     }
@@ -83,142 +89,100 @@ $(document).ready(async function () {
 
 async function loadStats() {
   try {
-    const [users, classes, memberships, bookings] = await Promise.all([
-      UsersAPI.getAll(),
-      ClassesAPI.getAll(),
-      MembershipsAPI.getAll(),
-      BookingsAPI.getAll()
-    ]);
-    $('#statUsers').text(users.length || 0);
-    $('#statClasses').text(classes.length || 0);
-    $('#statActiveMemberships').text((memberships || []).filter(m => m.status === 'active').length);
-    $('#statBookings').text((bookings || []).filter(b => b.status === 'confirmed').length);
+    const s = await AdminAPI.stats();
+    $('#statUsers').text(s.users);
+    $('#statClasses').text(s.classes);
+    $('#statActiveMemberships').text(s.activeMemberships);
+    $('#statBookings').text(s.confirmedBookings);
   } catch (err) {
-    console.error('loadStats hatası:', err.message);
+    console.error('loadStats:', err.message);
   }
 }
 
 async function loadClasses() {
-  $('#classesTableBody').empty();
-  try {
-    const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
-    const data = await ClassesAPI.getAll();
-
-    if (!data.length) {
-      $('#classesTableBody').html('<tr><td colspan="6" style="text-align:center;color:var(--muted);">Henüz ders eklenmedi.</td></tr>');
-      return;
+  await renderTable('classesTableBody', ClassesAPI.getAll, {
+    colspan:  6,
+    emptyMsg: 'Henüz ders eklenmedi.',
+    errorMsg: 'Dersler yüklenemedi.',
+    rowBuilder: c => {
+      const dt     = new Date(c.schedule).toLocaleString(LOCALE, { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+      const booked = c.booked_count || 0;
+      return $('<tr>').append(
+        $('<td>').append($('<strong>').text(c.name)),
+        $('<td>').text(c.instructor),
+        $('<td>').text(dt),
+        $('<td>').text(c.capacity),
+        $('<td>').html(`<span class="badge ${booked >= c.capacity ? 'badge-danger' : 'badge-success'}">${booked}/${c.capacity}</span>`),
+        $('<td>').html(`<button class="btn btn-danger btn-sm" onclick="deleteClass(${c.id})"><i class="fa-solid fa-trash"></i></button>`)
+      );
     }
-
-    data.forEach(c => {
-      const dt = new Date(c.schedule).toLocaleString(locale, { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-      $('#classesTableBody').append(`
-        <tr>
-          <td><strong>${c.name}</strong></td>
-          <td>${c.instructor}</td>
-          <td>${dt}</td>
-          <td>${c.capacity}</td>
-          <td>—</td>
-          <td><button class="btn btn-danger btn-sm" onclick="deleteClass(${c.id})"><i class="fa-solid fa-trash"></i></button></td>
-        </tr>
-      `);
-    });
-  } catch (err) {
-    console.error('loadClasses hatası:', err.message);
-    $('#classesTableBody').html(`<tr><td colspan="6" style="text-align:center;color:var(--danger);">Dersler yüklenemedi: ${err.message}</td></tr>`);
-  }
+  });
 }
 
 async function loadUsers() {
-  $('#usersTableBody').empty();
-  try {
-    const data = await UsersAPI.getAll();
-    $('#statUsers').text(data.length);
-
-    data.forEach(u => {
-      const roleLabel = u.role === 'admin' ? '<span class="badge badge-danger">Admin</span>' : '<span class="badge badge-primary">Üye</span>';
-      $('#usersTableBody').append(`
-        <tr>
-          <td><strong>${u.full_name || '—'}</strong></td>
-          <td>${u.email || '—'}</td>
-          <td>${roleLabel}</td>
-          <td>${formatDate(u.created_at)}</td>
-          <td><button class="btn btn-ghost btn-sm" onclick="changeRole('${u.id}','${u.role}')">${u.role === 'admin' ? 'Üye Yap' : 'Admin Yap'}</button></td>
-        </tr>
-      `);
-    });
-  } catch (err) {
-    console.error('loadUsers hatası:', err.message);
-    $('#usersTableBody').html(`<tr><td colspan="5" style="text-align:center;color:var(--danger);">Kullanıcılar yüklenemedi: ${err.message}</td></tr>`);
-  }
+  await renderTable('usersTableBody', UsersAPI.getAll, {
+    colspan:  5,
+    emptyMsg: 'Henüz üye yok.',
+    errorMsg: 'Kullanıcılar yüklenemedi.',
+    rowBuilder: u => {
+      const roleBadge = u.role === 'admin'
+        ? '<span class="badge badge-danger">Admin</span>'
+        : '<span class="badge badge-primary">Üye</span>';
+      return $('<tr>').append(
+        $('<td>').append($('<strong>').text(u.full_name || '—')),
+        $('<td>').text(u.email || '—'),
+        $('<td>').html(roleBadge),
+        $('<td>').text(formatDate(u.created_at)),
+        $('<td>').html(`<button class="btn btn-ghost btn-sm" onclick="changeRole('${u.id}','${u.role}')">${u.role === 'admin' ? 'Üye Yap' : 'Admin Yap'}</button>`)
+      );
+    }
+  });
 }
 
 async function loadMemberships() {
-  $('#membershipsTableBody').empty();
-  try {
-    const data = await MembershipsAPI.getAll();
-
-    if (!data.length) {
-      $('#membershipsTableBody').html('<tr><td colspan="5" style="text-align:center;color:var(--muted);">Kayıt bulunamadı.</td></tr>');
-      return;
-    }
-
-    data.forEach((m) => {
-      const userName = m.profile?.full_name || m.profile?.email || '—';
+  await renderTable('membershipsTableBody', MembershipsAPI.getAll, {
+    colspan:  5,
+    emptyMsg: 'Kayıt bulunamadı.',
+    errorMsg: 'Üyelikler yüklenemedi.',
+    rowBuilder: m => {
       const statusBadge = m.status === 'active'
         ? '<span class="badge badge-success">Aktif</span>'
         : '<span class="badge badge-danger">Pasif</span>';
-
-      $('#membershipsTableBody').append(`
-        <tr>
-          <td>${userName}</td>
-          <td>${m.plan_name || '—'}</td>
-          <td>${formatDate(m.start_date)}</td>
-          <td>${formatDate(m.end_date)}</td>
-          <td>${statusBadge}</td>
-        </tr>
-      `);
-    });
-  } catch (err) {
-    console.error('loadMemberships hatası:', err.message);
-    $('#membershipsTableBody').html(`<tr><td colspan="5" style="text-align:center;color:var(--danger);">Üyelikler yüklenemedi: ${err.message}</td></tr>`);
-  }
+      return $('<tr>').append(
+        $('<td>').text(m.profile?.full_name || m.profile?.email || '—'),
+        $('<td>').text(m.plan_name || '—'),
+        $('<td>').text(formatDate(m.start_date)),
+        $('<td>').text(formatDate(m.end_date)),
+        $('<td>').html(statusBadge)
+      );
+    }
+  });
 }
 
 async function loadBookings() {
-  $('#bookingsTableBody').empty();
-  try {
-    const locale = (typeof getLocale === 'function') ? getLocale() : 'tr-TR';
-    const data = await BookingsAPI.getAll();
-
-    if (!data.length) {
-      $('#bookingsTableBody').html('<tr><td colspan="5" style="text-align:center;color:var(--muted);">Kayıt bulunamadı.</td></tr>');
-      return;
-    }
-
-    data.forEach((b) => {
-      const userName = b.profile?.full_name || b.profile?.email || '—';
-      const className = b.classes?.name || '—';
+  await renderTable('bookingsTableBody', BookingsAPI.getAll, {
+    colspan:  5,
+    emptyMsg: 'Kayıt bulunamadı.',
+    errorMsg: 'Rezervasyonlar yüklenemedi.',
+    rowBuilder: b => {
       const dateStr = b.classes?.schedule
-        ? new Date(b.classes.schedule).toLocaleString(locale, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        ? new Date(b.classes.schedule).toLocaleString(LOCALE, { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
         : '—';
       const statusBadge = b.status === 'confirmed'
         ? '<span class="badge badge-success">Onaylı</span>'
         : '<span class="badge badge-danger">İptal</span>';
-
-      $('#bookingsTableBody').append(`
-        <tr>
-          <td>${userName}</td>
-          <td>${className}</td>
-          <td>${dateStr}</td>
-          <td>${statusBadge}</td>
-          <td>—</td>
-        </tr>
-      `);
-    });
-  } catch (err) {
-    console.error('loadBookings hatası:', err.message);
-    $('#bookingsTableBody').html(`<tr><td colspan="5" style="text-align:center;color:var(--danger);">Rezervasyonlar yüklenemedi: ${err.message}</td></tr>`);
-  }
+      const actionBtn = b.status === 'confirmed'
+        ? `<button class="btn btn-danger btn-sm" onclick="cancelBookingAdmin(${b.id})">İptal Et</button>`
+        : '—';
+      return $('<tr>').append(
+        $('<td>').text(b.profile?.full_name || b.profile?.email || '—'),
+        $('<td>').text(b.classes?.name || '—'),
+        $('<td>').text(dateStr),
+        $('<td>').html(statusBadge),
+        $('<td>').html(actionBtn)
+      );
+    }
+  });
 }
 
 window.deleteClass = async function (id) {
@@ -226,8 +190,7 @@ window.deleteClass = async function (id) {
   try {
     await ClassesAPI.delete(id);
     showAlert('#adminAlert', 'Ders silindi.', 'info');
-    await loadClasses();
-    await loadStats();
+    await Promise.all([loadClasses(), loadStats()]);
   } catch (err) { alert(err.message); }
 };
 
@@ -237,5 +200,14 @@ window.changeRole = async function (id, currentRole) {
     await UsersAPI.changeRole(id, newRole);
     showAlert('#adminAlert', `Rol güncellendi: ${newRole}`, 'success');
     await loadUsers();
+  } catch (err) { alert(err.message); }
+};
+
+window.cancelBookingAdmin = async function (id) {
+  if (!confirm('Bu rezervasyonu iptal etmek istediğinden emin misin?')) return;
+  try {
+    await BookingsAPI.cancelAdmin(id);
+    showAlert('#adminAlert', 'Rezervasyon iptal edildi.', 'info');
+    await Promise.all([loadBookings(), loadStats()]);
   } catch (err) { alert(err.message); }
 };

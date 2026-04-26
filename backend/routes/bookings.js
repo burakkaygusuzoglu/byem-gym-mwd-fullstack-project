@@ -1,19 +1,16 @@
-const express    = require('express');
+const express      = require('express');
 const { createClient } = require('@supabase/supabase-js');
-const supabase   = require('../supabase');
-const authMiddle = require('../middleware/auth');
-const router     = express.Router();
+const supabase     = require('../supabase');
+const authMiddle   = require('../middleware/auth');
+const requireAdmin = require('../middleware/requireAdmin');
+const router       = express.Router();
 
 const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
   ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
   : null;
 
 // GET /api/bookings/all — Tüm rezervasyonlar (admin)
-router.get('/all', authMiddle, async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Sadece adminler tüm rezervasyonları görebilir.' });
-  }
-
+router.get('/all', authMiddle, requireAdmin, async (req, res) => {
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY eksik.' });
   }
@@ -42,12 +39,9 @@ router.get('/all', authMiddle, async (req, res) => {
     }, {});
   }
 
-  const result = (bookings || []).map((b) => ({
-    ...b,
-    profile: profileMap[b.user_id] || null
-  }));
-
-  return res.json(result);
+  return res.json(
+    (bookings || []).map(b => ({ ...b, profile: profileMap[b.user_id] || null }))
+  );
 });
 
 // GET /api/bookings — Kullanıcının rezervasyonları
@@ -69,7 +63,6 @@ router.post('/', authMiddle, async (req, res) => {
 
   if (!class_id) return res.status(400).json({ error: 'class_id gerekli.' });
 
-  // Duplicate kontrol
   const { data: existing } = await supabase
     .from('bookings')
     .select('id')
@@ -90,13 +83,24 @@ router.post('/', authMiddle, async (req, res) => {
   return res.status(201).json(data);
 });
 
-// DELETE /api/bookings/:id — Rezervasyon iptal
+// DELETE /api/bookings/:id — Kullanıcının kendi rezervasyonunu iptal etmesi
 router.delete('/:id', authMiddle, async (req, res) => {
   const { error } = await supabase
     .from('bookings')
     .update({ status: 'cancelled' })
     .eq('id', req.params.id)
     .eq('user_id', req.user.id);
+
+  if (error) return res.status(500).json({ error: error.message });
+  return res.json({ message: 'Rezervasyon iptal edildi.' });
+});
+
+// DELETE /api/bookings/:id/admin — Admin herhangi bir rezervasyonu iptal eder
+router.delete('/:id/admin', authMiddle, requireAdmin, async (req, res) => {
+  const { error } = await supabase
+    .from('bookings')
+    .update({ status: 'cancelled' })
+    .eq('id', req.params.id);
 
   if (error) return res.status(500).json({ error: error.message });
   return res.json({ message: 'Rezervasyon iptal edildi.' });

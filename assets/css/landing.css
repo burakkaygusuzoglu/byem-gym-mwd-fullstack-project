@@ -6,7 +6,7 @@
 /* ── Hero ──────────────────────────────────────────────────── */
 .hero {
   position: relative;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100dvh - 64px);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -83,6 +83,7 @@
   font-size: 2.5rem;
   color: var(--primary);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
@@ -112,7 +113,6 @@
 
 .feature-card:hover {
   border-color: var(--primary);
-  transform: translateY(-3px);
 }
 
 .feature-icon {
@@ -149,7 +149,7 @@
 .cta-section p { font-size: 1.05rem; }
 
 /* ── Responsive ────────────────────────────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   .stats-grid    { grid-template-columns: repeat(2, 1fr); }
 }
