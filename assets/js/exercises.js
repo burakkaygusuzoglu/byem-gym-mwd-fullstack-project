@@ -141,3 +141,68 @@ window.openExerciseModal = function (ex) {
   $('#modalInstructions').text(ex.instructions || 'Detay bilgisi mevcut değil.');
   $('#exerciseModal, #modalOverlay').css('display', 'block');
 };
+
+/* ============================================================
+   �rnek Egzersizler (40 Adet - Lokal Resim Ba�lant�l�)
+   ============================================================ */
+const exampleExercises = [
+  { name: 'Bench Press', file: 'bench-press.jpg' },
+  { name: 'Squat', file: 'squat.jpg' },
+  { name: 'Deadlift', file: 'deadlift.jpg' },
+  { name: 'Pull Up', file: 'pull-up.jpg' },
+  { name: 'Push Up', file: 'push-up.jpg' },
+  { name: 'Dumbbell Curl', file: 'dumbbell-curl.jpg' },
+  { name: 'Shoulder Press', file: 'shoulder-press.jpg' },
+  { name: 'Leg Press', file: 'leg-press.jpg' },
+  { name: 'Lunge', file: 'lunge.jpg' },
+  { name: 'Plank', file: 'plank.jpg' },
+  { name: 'Barbell Row', file: 'barbell-row.jpg' },
+  { name: 'Tricep Extension', file: 'tricep-extension.jpg' },
+  { name: 'Lat Pulldown', file: 'lat-pulldown.jpg' },
+  { name: 'Leg Curl', file: 'leg-curl.jpg' },
+  { name: 'Leg Extension', file: 'leg-extension.jpg' },
+  { name: 'Calf Raise', file: 'calf-raise.jpg' },
+  { name: 'Crunch', file: 'crunch.jpg' },
+  { name: 'Russian Twist', file: 'russian-twist.jpg' },
+  { name: 'Burpee', file: 'burpee.jpg' },
+  { name: 'Mountain Climber', file: 'mountain-climber.jpg' },
+  { name: 'Kettlebell Swing', file: 'kettlebell-swing.jpg' },
+  { name: 'Box Jump', file: 'box-jump.jpg' },
+  { name: 'Wall Sit', file: 'wall-sit.jpg' },
+  { name: 'High Knees', file: 'high-knees.jpg' },
+  { name: 'Jumping Jack', file: 'jumping-jack.jpg' },
+  { name: 'Front Squat', file: 'front-squat.jpg' },
+  { name: 'Incline Bench Press', file: 'incline-bench-press.jpg' },
+  { name: 'Decline Bench Press', file: 'decline-bench-press.jpg' },
+  { name: 'Chest Fly', file: 'chest-fly.jpg' },
+  { name: 'Dumbbell Row', file: 'dumbbell-row.jpg' },
+  { name: 'Upright Row', file: 'upright-row.jpg' },
+  { name: 'Lateral Raise', file: 'lateral-raise.jpg' },
+  { name: 'Front Raise', file: 'front-raise.jpg' },
+  { name: 'Shrug', file: 'shrug.jpg' },
+  { name: 'Hammer Curl', file: 'hammer-curl.jpg' },
+  { name: 'Preacher Curl', file: 'preacher-curl.jpg' },
+  { name: 'Skull Crusher', file: 'skull-crusher.jpg' },
+  { name: 'Dumbbell Pullover', file: 'dumbbell-pullover.jpg' },
+  { name: 'Cable Crossover', file: 'cable-crossover.jpg' },
+  { name: 'Pec Deck', file: 'pec-deck.jpg' }
+];
+
+$(document).ready(function() {
+  const gallery = $('#exampleGallery');
+  if (gallery.length > 0) {
+    let html = '';
+    exampleExercises.forEach(ex => {
+      // Projedeki assets/images/exercises klas�r�nden ger�ek foto�raflar� �a��r�yoruz.
+      // E�er foto�raf klas�rde hen�z yoksa, �irkin rastgele manzara ��kmas�n diye temaya uygun ��k bir "Harf logolu turuncu-siyah ikon" ��kacak.
+      const imgUrl = `../assets/images/exercises/${ex.file}`;
+      const fallbackUrl = `https://ui-avatars.com/api/?name=${ex.name.replace(/ /g, '+')}&background=1a1a1a&color=f97316&size=300&font-size=0.4`;
+      
+      html += `<div class="example-item">
+        <img src="${imgUrl}" onerror="this.onerror=null;this.src='${fallbackUrl}';" alt="${ex.name}" loading="lazy" />
+        <p>${ex.name}</p>
+      </div>`;
+    });
+    gallery.html(html);
+  }
+});
