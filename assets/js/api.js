@@ -33,10 +33,19 @@ async function apiFetch(endpoint, options = {}) {
     ...options.headers
   };
 
-  const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-  const data = await response.json();
+  let response;
+  try {
+    response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+  } catch (err) {
+    throw new Error('Sunucuyla bağlantı kurulamadı. Ağ hatası olabilir.');
+  }
+
+  const data = await response.json().catch(() => ({})); 
 
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      Auth.logout();
+    }
     throw new Error(data.error || 'Bir hata oluştu.');
   }
 

@@ -28,9 +28,14 @@ $(document).ready(async function () {
     const me = await AuthAPI.me();
     isAdmin = me?.role === 'admin';
     Auth.setUser(me);
-  } catch {
-    window.location.href = 'login.html';
-    return;
+  } catch (err) {
+    const localUser = Auth.getUser();
+    if (localUser && localUser.role === 'admin') {
+      isAdmin = true;
+    } else {
+      Auth.logout();
+      return;
+    }
   }
 
   if (!isAdmin) {
